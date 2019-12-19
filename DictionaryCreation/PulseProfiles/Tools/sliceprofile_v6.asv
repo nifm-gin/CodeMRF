@@ -1,0 +1,57 @@
+function [ varargout ] = sliceprofile_v6(rf,grad,dT,T1,T2,pos,df,v,Min)
+% simulation of Boch equations for RF pulses, including effects of relaxation and flow
+% v should be a vector of flow velocities in mm/s
+% dT = timestep in s
+
+npos = length(pos);
+nsteps = length(rf);
+
+gamma = 4258;             % 1/(s*gauss)
+rfrot = 2*pi*gamma*rf*dT; % Rotation in radians for each discrete RF sample
+
+pos = pos(:)'*2*pi*gamma*(1/10)*dT;		% Make 1xN and convert to rad*cm/Gauss
+dpos = v*2*pi*gamma*(1/10)*dT*dT;   % Make 1xN and convert to rad*cm/(Gauss*timestep) %v(:)'*2*pi*gamma*(1/10)*dT*dT;
+
+% calculate matrix for relaxation processes during free precession between RF samples
+[A,B] = freeprecess(1000*dT/2,T1,T2,df);
+B = repmat(B,1,length(pos));
+
+% prof = zeros(length(pos),length(v));
+
+this_pos = pos;           % re-position spins at the beginning for next simulation
+%    tic
+%    disp(['Processing v=',num2str(v(l)),' mm/s']);
+   % M is the magnetization (x,y,z) for each position (1..length(pos))
+   M = Min;%[z;z;o];    % magnetization before RF pulse: all along z, fully relaxed NOT ANYMORE
+
+   for k = 1:nsteps            % loop over gradient and RF samples, treat position in parallel
+      % Strictly speaking we should simulate in the following order:
+      % [gradient,relaxation],RF,[relaxation,gradient],motion.
+      % lets do that. Calculation time is so long that this needs to run overnight anyway.
+      Z = zrot((this_pos/2)*grad(k));
+      for x = 1:npos
+         M(:,x) = Z(:,:,x)*M(:,x); % some phase shift due to gradient (function of pos)
+      end;
+      M = A*M+B;                    % next some free precession (and relaxation)
+      for x = 1:npos
+         T = squeeze(throt2(abs(rfrot(k)),angle(rfrot(k))));
+         M(:,x) = Z(:,:,x)*T*M(:,x);        % then RF pulse (T) and more phase shift due to gradient (function of pos)
+      end;
+      M = A*M+B;                    % more free precession (and relaxation)
+      this_pos = this_pos+dpos;            % finally: move the flowing spins
+   end;
+
+%    prof(:,l) = M(3,:)';
+   nout = max(nargout,1);             % use at least one output argument
+   if nout > 1,                       % return full matrix
+       varargout{1} = M(1,:)';
+       varargout{2} = M(2,:)';
+       varargout{3} = M(3,:)';
+   else                               % return only longitudinal component
+       varargout{1} = M(3,:)';
+   end;
+
+%    dt = toc;
+%    disp(['Predicted remaining calculation time: ',num2str(dt*(length(v)-l)),' s']);
+end
+
