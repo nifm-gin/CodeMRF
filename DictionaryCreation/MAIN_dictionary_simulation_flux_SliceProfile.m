@@ -1,6 +1,10 @@
 % clear all
-global simu_dico_working_directory
+%global simu_dico_working_directory
 % simu_dico_working_directory = 'C:\Users\warnking\Documents\MATLAB\simulations\fingerprint\Outils';
+
+tmpRootDir  = fileparts(mfilename('fullpath'));
+idx = strfind(tmpRootDir,'/');
+rootDir = tmpRootDir(1:idx(end));
 
 ToDo=struct;
 Sequence=struct;% ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -8,8 +12,8 @@ Properties=struct;
 PulseProfile=struct;
 
 %% Choix du pulse (profil de coupe)
-PulseProfile.PulseShape='Calculated'; % 'Calculated', 'sinc3', 'sinc7', 'sinc10'         % Anciennement (à refaire ?) 'Ideal', 'Calculated_2.1ms_1mm', 'sinc3_3.1ms_1mm', 'sinc7_2.8ms_1mm', other (pop up choix de dossier)
-
+PulseProfile.PulseShape = 'Calculated'; % 'Calculated', 'sinc3', 'sinc7', 'sinc10'         % Anciennement (à refaire ?) 'Ideal', 'Calculated_2.1ms_1mm', 'sinc3_3.1ms_1mm', 'sinc7_2.8ms_1mm', other (pop up choix de dossier)
+PulseProfile.toLoad = 'dico_Test_18_12_2019';
 
 %% Generation de nouvelles propriétés du milieu ? Ou chargement d'un jeu de données existant
 ToDo.genpropertiesYesNo='No';    
@@ -20,7 +24,7 @@ end
 % Properties=load('D:\MATLAB\MRF_v3_SliceProfile_flux\Séquences et propriétés du milieu\properties_manipflux.mat','B1rel','B1rellist','T1','T1list','T2','T2list','df','dflist','vlist');
 %load('D:\MATLAB\MRF_v3_SliceProfile_flux\Dictionnaires\Dico_flux\struct_properties_flux.mat')
 % load('/media/aurelien/QQCHSE/MRF_v3_SliceProfile_flux/Dictionnaires/Dico_flux/struct_properties_flux.mat')
-load('/media/aurelien/QQCHSE/MRF_v3_SliceProfile_flux/Dictionnaires/Dico_flux/struct_properties_AD_Test.mat')
+load([rootDir 'SequencesAndProperties/struct_properties_AD_Test.mat'])
 % Properties.vlist=[0];
 
 
@@ -31,7 +35,7 @@ if strcmp(ToDo.gensequenceYesNo,'Yes')
 end
 % Sequence=load('D:\MATLAB\MRF_v3_SliceProfile_flux\Sequences et proprietes du milieu\sequence_2016-08-12_1.mat');
 % Sequence=load('/media/aurelien/QQCHSE/MRF_v3_SliceProfile_flux/Séquences et propriétés du milieu/sequence_2016-08-12_1.mat');
-load('/media/aurelien/QQCHSE/MRF_v3_SliceProfile_flux/Séquences et propriétés du milieu/sequence_Test_18_12_2019.mat');
+load([rootDir 'SequencesAndProperties/sequence_Test_18_12_2019.mat']);
 % Sequence.FA=abs(Sequence.FA);%(2:2:end)=-Sequence.FA(2:2:end);
 % Sequence.m0(3)=1;
 % Sequence.Ncycles=4;
@@ -40,7 +44,7 @@ load('/media/aurelien/QQCHSE/MRF_v3_SliceProfile_flux/Séquences et propriétés
 ToDo.prepdicoYesNo='Yes';        
 if strcmp(ToDo.prepdicoYesNo,'Yes')
     Sequence.v9_v10='v10'; 
-end; % v9 = spoiler avant l'acq, v10 = spoiler aprés l'acq
+end % v9 = spoiler avant l'acq, v10 = spoiler aprés l'acq
 
 %% Calcul du dictionnaire ?
 ToDo.dicoYesNo='Yes';
@@ -90,11 +94,13 @@ end
 
 %% Profil de coupe
 % Pulse d'excitation
-[PulseProfile.Rot, PulseProfile.FAlistdeg, PulseProfile.positions_mm, PulseProfile.SliceThickness_th_mm, PulseProfile.p0, PulseProfile.Nspins, PulseProfile.flow_velocities,PulseProfile.dflist] = loadPulseProfileFAv(PulseProfile.PulseShape);
+[PulseProfile.Rot, PulseProfile.FAlistdeg, PulseProfile.positions_mm, PulseProfile.SliceThickness_th_mm, PulseProfile.p0, PulseProfile.Nspins, PulseProfile.flow_velocities,PulseProfile.dflist] = ...
+    loadPulseProfileFAv(rootDir, PulseProfile.toLoad);
 % Pulse d'inversion
 if Sequence.m0(3)==-1
     %InvPulseProfile=load('D:\MATLAB\MRF_v3_SliceProfile_flux\Creation de dictionnaire\Pulse Profiles\Pulse d''inversion\matrice_de_rotation_InvPulse.mat','M0','flow_velocities');
-    InvPulseProfile=load("/media/aurelien/QQCHSE/MRF_v3_SliceProfile_flux/Création de dictionnaire/Pulse Profiles/Pulse d'inversion/matrice_de_rotation_InvPulse.mat",'M0','flow_velocities');
+    InvPulseProfile=load([rootDir 'DictionaryCreation/PulseProfiles/InversionPulse/matrice_de_rotation_InvPulse.mat'], 'M0', 'flow_velocities');
+    %InvPulseProfile=load("/media/aurelien/QQCHSE/MRF_v3_SliceProfile_flux/Création de dictionnaire/Pulse Profiles/Pulse d'inversion/matrice_de_rotation_InvPulse.mat",'M0','flow_velocities');
 end
 
 %% Preparation du dictionnaire

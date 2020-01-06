@@ -1,12 +1,15 @@
-function  [varargout ] = loadPulseProfileFAv( pulseshape )
-%   LOADPULSEPROFILEFAV Summary of this function goes here
-%   Detailed explanation goes here
+function  [varargout ] = loadPulseProfileFAv(rootDir, toLoad )
+%   LOADPULSEPROFILEFAV Loads pre-generated pulse profile dictionary and
+%   orders its content 
+%   rootDir = directory in which the main is called
+%   toLoad = name of the file to load, without extention
+
 % load(strcat('D:\MATLAB\MRF_v3_SliceProfile_flux\Cr�ation de dictionnaire\Pulse Profiles\Dictionnaire\dictionary_SliceProfiles_FAv_',num2str(pulseshape),'.mat'))
 % load('D:\MATLAB\MRF_v3_SliceProfile_flux\Cr�ation de dictionnaire\Pulse Profiles\Dictionnaire\dico_vnegposx10_deg.mat') ;%
 % load('D:\MATLAB\MRF_v3_SliceProfile_flux\Cr�ation de dictionnaire\Pulse Profiles\Dictionnaire\dico_df_10blocscte_aveccorr.mat');% 
 % load('/media/aurelien/QQCHSE/MRF_v3_SliceProfile_flux/Création de dictionnaire/Pulse Profiles/Dictionnaire/dico_vnegposx10_tenthdeg.mat');% -----------------------------------------------------------------------------
-load('/media/aurelien/QQCHSE/MRF_v3_SliceProfile_flux/Création de dictionnaire/Pulse Profiles/Dictionnaire/dico_Test_18_12_2019.mat');
-
+% load('/media/aurelien/QQCHSE/MRF_v3_SliceProfile_flux/Création de dictionnaire/Pulse Profiles/Dictionnaire/dico_Test_18_12_2019.mat');
+load([rootDir 'DictionaryCreation/PulseProfiles/PulseDictionaries/' toLoad '.mat'])
 Nspins=length(positions_mm);
 
 
