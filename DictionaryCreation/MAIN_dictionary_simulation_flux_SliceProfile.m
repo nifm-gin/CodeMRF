@@ -13,7 +13,7 @@ PulseProfile=struct;
 
 %% Choix du pulse (profil de coupe)
 PulseProfile.PulseShape = 'Calculated'; % 'Calculated', 'sinc3', 'sinc7', 'sinc10'         % Anciennement (à refaire ?) 'Ideal', 'Calculated_2.1ms_1mm', 'sinc3_3.1ms_1mm', 'sinc7_2.8ms_1mm', other (pop up choix de dossier)
-PulseProfile.toLoad = 'dico_Test_18_12_2019';
+PulseProfile.toLoad = 'dico_Test_07_01_2020';
 
 %% Generation de nouvelles propriétés du milieu ? Ou chargement d'un jeu de données existant
 ToDo.genpropertiesYesNo='No';    
@@ -70,7 +70,7 @@ end
 %% Enregistrement de la séquence et/ou du dictionnaire ?
 ToDo.savetxtYesNo='Yes';        
 if strcmp(ToDo.savetxtYesNo,'Yes')
-    name=strcat('sequence_Test_18_12_2019_',PulseProfile.PulseShape); 
+    name=strcat('sequence_Test_07_01_2020_',PulseProfile.PulseShape); 
 end
 % ToDo.savematYesNo='No';        if strcmp(ToDo.savemattYesNo,'Yes')
 %                                   name_dico=strcat('dico_sequence_2016-07-27_1_',pulseshape); end
@@ -184,19 +184,20 @@ end
 
 %% Enregistrement du dictionnaire et de la sequence en .txt
 if strcmp(ToDo.savetxtYesNo,'Yes')
-    display('Saving the dictionary and exporting the sequence to a .txt file...')
+    fprintf('Saving the dictionary and exporting the sequence to a .txt file...\n')
     if exist(strcat(name,'.mat'),'file')==2
         name=strcat(name,datestr(now,'HH-MM-SS'),pulseshape);
         display(strcat('Le fichier existe deja, le nouveau fichier est renomme en ',name))
     end
-    sequence2txt_mrfv3;
+    sequence2txt_mrfv3(rootDir, name, Sequence);
+    fprintf('Done\n')
 end
 
 % if strcmp(ToDo.savematYesNo,'Yes')
 %     save(name_dico,'-v7.3')
 % end
 
-clear ToDo
+%clear ToDo
 
 %% Display 'Finiii ! :)'
 disp(sprintf('\n\n\n                 Finiii ! :) '));
