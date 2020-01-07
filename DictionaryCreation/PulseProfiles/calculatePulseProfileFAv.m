@@ -7,11 +7,14 @@ function [ Rot, FAlist, positions_mm, SliceThickness_th_mm, p0 ] = calculatePuls
     % rotation axis is not exactly in the xy plane.
 
     % Adapted by Sandra Brunel from a program written by Jan Warnking
+    
     if nargin<4
         df=0;
     end
 
-    load(strcat('/media/aurelien/QQCHSE/MRF_v3_SliceProfile_flux/Création de dictionnaire/Pulse Profiles/Profils/',num2str(pulseshape),'.mat'))
+    tmpDir  = fileparts(mfilename('fullpath'));
+    
+    load(strcat(tmpDir, '/Profiles/',num2str(pulseshape),'.mat'))
     FAlist=unique(FA); % Flip angle list in � 
 
     pulse_duration = p0; % duration of RF pulse in s
