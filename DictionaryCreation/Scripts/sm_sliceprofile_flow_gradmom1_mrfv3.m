@@ -57,8 +57,8 @@ function [Signal]=sm_sliceprofile_flow_gradmom1(Sequence,PulseProfile, Parameter
 % LISTE DE MATRICES DE ROTATION
 indicesRot=zeros([1 length(Sequence.FA)]);
 for kFA=1:length(Sequence.FA)
-    indicesRot_temp=find(abs(PulseProfile.FAlistdeg(:)-Sequence.FA(kFA)*B1*180/pi)==min(abs(PulseProfile.FAlistdeg(:)-Sequence.FA(kFA)*B1*180/pi)));
-    indicesRot(kFA)=indicesRot_temp(1);
+    indicesRot_temp=find(abs(PulseProfile.FAlist(:)-Sequence.FA(kFA)*B1*180/pi)==min(abs(PulseProfile.FAlist(:)-Sequence.FA(kFA)*B1*180/pi)));
+    indicesRot(kFA)=indicesRot_temp(1); %Replaced FAlistdeg with FAlist (Aurelien)
 end
 %PulseProfile.Rot=squeeze(PulseProfile.Rot(:,:,:,indicesRot(:)));
 PulseProfile.Rot=PulseProfile.Rot(:,:,:,indicesRot(:));

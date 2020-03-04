@@ -28,7 +28,11 @@ for zz=1:length(Properties.dflist)
     %     for iBlock = 1:nBlocks
     %         p = Parameters(iBlock);
     
-    [Signal]=sm_sliceprofile_flow_gradmom1_mrfv3(Sequence,PulseProfile,Parameters, Properties.T1list(zz)/1000, Properties.T2list(zz)/1000, Properties.dflist(zz), Properties.B1rellist(zz), Properties.vlist(1), this_pos, M); %  B1rel*parameters.rfrot,parameters.Gpre0,parameters.Gpre1,parameters.Gpost0,parameters.Gpost1,parameters.TE,parameters.TR,T1,T2,this_pos,parameters.min_pos_init,parameters.max_pos_init,df,v,M,SliceProfile);
+    [Signal] = sm_sliceprofile_flow_gradmom1_mrfv3(Sequence, PulseProfile, ...
+        Parameters, Properties.T1list(zz)/1000, Properties.T2list(zz)/1000, Properties.dflist(zz), Properties.B1rellist(zz), Properties.vlist(1), this_pos, M); 
+    %  B1rel*parameters.rfrot, parameters.Gpre0, parameters.Gpre1, parameters.Gpost0, parameters.Gpost1, parameters.TE, parameters.TR,T1,T2, this_pos,parameters.min_pos_init, 
+    %       parameters.max_pos_init, df, v, M, SliceProfile);
+    
     %[Signal,M,this_pos]
     % store complex signal for this block
     nSignals = numel(Signal);

@@ -1,0 +1,50 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% toDo %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+toDo.genProperties              = 0;
+toDo.genSequence                = 0;
+toDo.dispSeq                    = 1;
+toDo.prepDico                   = 1;
+toDo.computeDico                = 1;
+toDo.dispVar                    = 1;
+toDo.testRobustness             = 1;
+toDo.savePropStruct             = 1;
+toDo.saveSeqStruct              = 1;
+toDo.exportSeqPV6               = 1;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Pulse %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+PulseProfile.PulseShape         = 'Calculated'; 
+PulseProfile.toLoad             = 'dico_Test_07_01_2020.mat';
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Properties %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%-------------- If New Properties --------------%
+Properties.T1                   = [2500];
+Properties.T2                   = [110];
+Properties.df                   = [0];
+Properties.B1rel                = [1.0];
+Properties.vlist                = 0; % [-150 -100 -60 -40 -20 -10 -5 0 5 10 20 40 60 100 150]; % mm/s
+Properties.toSave               = 'propTest';
+%-------------- If Load Properties --------------%
+Properties.toLoad               = 'struct_properties_AD_Test';
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Sequence %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%-------------- If New Sequence --------------%
+Sequence.Npulses                = 500; 
+Sequence.v9_v10                 = 'v10';        %v9 = spoiler before Acq, v10 = spoiler after Acq
+Sequence.Ncycles                = 4;            % Dephasing cycles
+Sequence.m0                     = [0, 0, 1];    % No inversion, [0,0,-1] if inversion
+Sequence.dispFlag               = 1;            % 1 to plot seq time course
+Sequence.toSave                 = 'seq_17-02-20'; 
+%-------------- If Load Sequence --------------%
+Sequence.toLoad                 = 'sequence_Test_07_01_2020_Calculated.mat';
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Dico %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Dico.saveName                   = 'DicoTest_19_02_2020';
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% VarAff %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+VariablesAff.T1aff              = 1500;      
+VariablesAff.T2aff              = 100;
+VariablesAff.dfaff              = 0;         
+VariablesAff.vaff               = 0;
+VariablesAff.B1relaff           = 1;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Robustness %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+TestRobustnessToNoise.SNR       = 2; 
