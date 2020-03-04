@@ -6,8 +6,8 @@ PulseProfile.PulseShape = 'Calculated';
 load('/home/aurelien/Installations/CodeMRF/SequencesAndProperties/struct_properties_AD_Test.mat');
 
 % Create sequence parameters on 1000 pulses
-Sequence.Npulses = 1000;
-[FA, TE, TR, m0, Ncycles] = gensequence_mrfv3(Sequence.Npulses);
+Sequence.nPulses = 1000;
+[FA, TE, TR, m0, Ncycles] = gensequence_mrfv3(Sequence.nPulses);
 Sequence.FA = FA;
 Sequence.TE = TE;
 Sequence.TR = TR;

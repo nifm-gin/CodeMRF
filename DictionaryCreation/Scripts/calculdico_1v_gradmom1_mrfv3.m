@@ -1,6 +1,6 @@
-function [ dictionary ] = calculdico_1v_gradmom1(Parameters, Properties,PulseProfile, Sequence,InvPulseProfile) % parameters, Npulses, T1list, T2list, dflist, B1rellist, vlist, m0, SliceProfile,Mz )
+function [ dictionary ] = calculdico_1v_gradmom1(Parameters, Properties,PulseProfile, Sequence,InvPulseProfile) % parameters, nPulses, T1list, T2list, dflist, B1rellist, vlist, m0, SliceProfile,Mz )
 
-dictionary=zeros(length(Properties.dflist),Sequence.Npulses);
+dictionary=zeros(length(Properties.dflist),Sequence.nPulses);
 
 h=waitbar(0,'Calcul en cours...');
 % nBlocks = numel(Parameters);

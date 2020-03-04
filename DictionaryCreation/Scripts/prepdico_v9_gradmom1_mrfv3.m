@@ -1,4 +1,4 @@
-function [ parameters ] = prepdico_v9_gradmom1( Sequence, PulseProfile) % FA, TE, TR, Ncycles, Npulses, Nspins, SliceThickness_th,pos,p0)
+function [ parameters ] = prepdico_v9_gradmom1( Sequence, PulseProfile) % FA, TE, TR, Ncycles, nPulses, Nspins, SliceThickness_th,pos,p0)
 %PREPDICO Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -10,8 +10,8 @@ function [ parameters ] = prepdico_v9_gradmom1( Sequence, PulseProfile) % FA, TE
 %  - gamma in rad/(s.T)
 %  - gradients in T/mm (!)
 
-%% Paramètres de séquence/IRM
-% Paramètres IRM
+%% Paramï¿½tres de sï¿½quence/IRM
+% Paramï¿½tres IRM
 parameters=struct('gamma',2*pi*42.5764e6); % rad/(s.T)
 parameters.PVM_GradCalConst=28933.3; % Hz/mm
 
@@ -19,7 +19,7 @@ parameters.Nspins=PulseProfile.Nspins;
 parameters.SliceThickness=PulseProfile.SliceThickness_th_mm;
 parameters.pos=PulseProfile.positions_mm;
 
-% Durées PV
+% Durï¿½es PV
 parameters.dReph=281e-6;  % s
 parameters.dAmp=25e-6;    % s
 parameters.p0=PulseProfile.p0; % s
@@ -46,13 +46,13 @@ parameters.g0 = +Gs; % 3.46 % gradient amplitude in '%'
 parameters.g1 = -Gs*(parameters.p0/2+parameters.dAmp)/parameters.dReph; % -13.92; % de(re-)phasing gradient. Half the integral of slice-select gradient
 parameters.g2 = 2*pi*Sequence.Ncycles/(parameters.grad_percent*parameters.dReph*parameters.gamma*parameters.SliceThickness);%+ -Gs*(parameters.p0/2)/parameters.dReph PRIS EN COMPTE DANS LE SLICEPROFILE
 
-%% Définition de la séquence de gradients/RF/dt
-Gpre0  = zeros(1,Sequence.Npulses);
-Gpre1  = zeros(1,Sequence.Npulses);
-Gpost0 = zeros(1,Sequence.Npulses);
-Gpost1 = zeros(1,Sequence.Npulses);
+%% Dï¿½finition de la sï¿½quence de gradients/RF/dt
+Gpre0  = zeros(1,Sequence.nPulses);
+Gpre1  = zeros(1,Sequence.nPulses);
+Gpost0 = zeros(1,Sequence.nPulses);
+Gpost1 = zeros(1,Sequence.nPulses);
 
-for k=1:Sequence.Npulses
+for k=1:Sequence.nPulses
     % Gradients between RF and acquisition
     grad    =  0;%parameters.g0*parameters.grad_percent; % second half of RF with Gs PRIS EN COMPTE DANS LE SLICEPROFILE 
     grad(2) =  parameters.g2*parameters.grad_percent; % spoiler (sans slice rephase car pris en compte dans le slice profile)
@@ -76,7 +76,7 @@ parameters.Gpre0=Gpre0; clear Gpre0
 parameters.Gpre1=Gpre1; clear Gpre1
 parameters.Gpost0=Gpost0; clear Gpost0
 parameters.Gpost1=Gpost1; clear Gpost1
-parameters.TE=TE; %clear TE ===================== J'ai besoin de TE, TR, FA, Ncycles, Npulses dans beaucoup d'autres de mes codes donc je veux bien les garder si possible
+parameters.TE=TE; %clear TE ===================== J'ai besoin de TE, TR, FA, Ncycles, nPulses dans beaucoup d'autres de mes codes donc je veux bien les garder si possible
 parameters.TR=TR; %clear TR
 
 %% AJOUT 31/08/2016 %%

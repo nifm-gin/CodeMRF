@@ -333,7 +333,7 @@ function pushbutton_load_sequence_rand_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_load_sequence_rand (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% clear T1 T2 df handles.T1 handles.T2 handles.df handles.T1list handles.T2list hangles.dflist handles.dictionary handles.TE handles.TR handles.M0 handles.Ncycles handles.Npulses B1 handles.B1 handles.B1list handles.fingerprint
+% clear T1 T2 df handles.T1 handles.T2 handles.df handles.T1list handles.T2list hangles.dflist handles.dictionary handles.TE handles.TR handles.M0 handles.Ncycles handles.nPulses B1 handles.B1 handles.B1list handles.fingerprint
 
 
 [filename, pathname,] = uigetfile('*.mat', 'Choisir le fichier');
@@ -361,7 +361,7 @@ handles.TR=Sequence.TR;
 handles.FA=Sequence.FA;%_deg*pi/180;
 handles.M0=Sequence.m0;
 handles.Ncycles=Sequence.Ncycles;
-handles.Npulses=Sequence.Npulses;
+handles.nPulses=Sequence.nPulses;
 
 % if exist('Properties.B1rellist')
     set(handles.slider_B1,'Enable','on');
@@ -407,7 +407,7 @@ cla(handles.graphe_FA)
 plot(handles.graphe_FA,handles.FA*180/pi)
 title(handles.graphe_FA,'Flip angles');
 xlabel(handles.graphe_FA,'timepoint #');
-ylabel(handles.graphe_FA,'FA (°)');
+ylabel(handles.graphe_FA,'FA (ï¿½)');
 
 
 cla(handles.graphe_TR)

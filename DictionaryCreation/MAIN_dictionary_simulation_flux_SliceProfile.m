@@ -1,6 +1,8 @@
+function [Properties, Sequence, varargout] = MAIN_dictionary_simulation_flux_SliceProfile(toRead)
+
 fprintf('Starting simulation tool... \n')
 
-toRead = 'testGenSeqProp.txt';
+% toRead = 'testGenSeqProp.txt';
 
 %% INIT
 tmpRootDir  = fileparts(mfilename('fullpath'));
@@ -33,13 +35,13 @@ end
 fprintf('  Sequence ... ')
 % toDo.gensequenceYesNo='Yes';
 if toDo.genSequence
-    %     Sequence.Npulses = 500;
+    %     Sequence.nPulses = 500;
     %     Sequence.v9_v10 = 'v10'; %v9 = spoiler before Acq, v10 = spoiler after Acq
     %     Sequence.Ncycles = 4; % Dephasing cycles
     %     Sequence.m0 = [0, 0, 1]; % No inversion, [0,0,-1] if inversion
     %
     %     dispFlag = 1; % 1 to plot seq time course
-    Sequence = gensequence_mrfv3(Sequence);
+    Sequence = genSeq(Sequence);
     fprintf('Generated \n')
     if toDo.saveSeqStruct
         save([rootDir, 'SequencesAndProperties/', Sequence.toSave, '_', PulseProfile.PulseShape, '.mat'], 'Sequence');
@@ -217,6 +219,11 @@ if toDo.exportSeqPV6
     fprintf('Done \n')
 end
 
-
+if length(Properties.vlist) == 1
+    varargout = dictionary;
+else
+    varargout = dico_flux;
+end
 %% Display 'Finiii ! :)'
 fprintf('----------------Done----------------\n');
+end

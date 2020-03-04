@@ -20,13 +20,13 @@ a6=25;
 
 
 
-Nrf=floor(seqIn.Npulses/5);
+Nrf=floor(seqIn.nPulses/5);
 % Nrf=250;
 % waittime=50;
 waittime=10;
 
-%     FA=ones(1,Npulses+4*waittime);
-FA=ones(1, seqIn.Npulses);
+%     FA=ones(1,nPulses+4*waittime);
+FA=ones(1, seqIn.nPulses);
 for k=1:Nrf
     %         FA(k)=(k)/Nrf*a1;%sin(k*pi/Nrf)*a1;
     %         FA(Nrf+waittime+k)=abs(sin((k)*pi/(Nrf+10)))*a2;
@@ -52,10 +52,10 @@ for k=1:waittime
     FA(6*Nrf+5*waittime+k)=0;
 end
 
-%    FA=90*perlin_mrfv3(Npulses/20,20); % ---------------------------------- A VIRER APRES
+%    FA=90*perlin_mrfv3(nPulses/20,20); % ---------------------------------- A VIRER APRES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 FA = round(FA);
-FA=FA(1:seqIn.Npulses)*pi/180;
+FA=FA(1:seqIn.nPulses)*pi/180;
 FA(2:2:end)=-FA(2:2:end);
 
 %   FA(2:4:end)=-FA(2:4:end);
@@ -67,7 +67,7 @@ clear a1 a2 a3 a4 a5 a6 a7 k
 
 
 %% TR
-TR=15+15*perlin_mrfv3(seqIn.Npulses/50,50);
+TR=15+15*perlin_mrfv3(seqIn.nPulses/50,50);
 %   TR(2*(Nrf+waittime)+(1:Nrf))=50;
 
 % TR(1:Nrf)=15+15*perlin_mrfv3(Nrf/20,20);
@@ -78,9 +78,9 @@ TR=15+15*perlin_mrfv3(seqIn.Npulses/50,50);
 TR=TR';
 %% TE
 %   TE=10*ones(size(TR)) ;
-%     TE=8+5*perlin_mrfv3(Npulses/50,50);
+%     TE=8+5*perlin_mrfv3(nPulses/50,50);
 TE=TR/2;
-%     TE=min(TR/2,7.5+10*perlin_mrfv3(Npulses/20,20));
+%     TE=min(TR/2,7.5+10*perlin_mrfv3(nPulses/20,20));
 
 clear Nrf waittime
 
