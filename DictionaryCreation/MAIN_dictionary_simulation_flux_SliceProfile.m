@@ -220,10 +220,12 @@ if toDo.exportSeqPV6
 end
 
 if length(Properties.vlist) == 1
-    varargout = dictionary;
+    varargout = {'dictionary'};
 else
-    varargout = dico_flux;
+    varargout = {'dico_flux'};
 end
+
+
 %% Display 'Finiii ! :)'
 fprintf('----------------Done----------------\n');
 end

@@ -21,31 +21,31 @@ Properties.T2                   = [10:10:500];
 Properties.df                   = [0];
 Properties.B1rel                = [0.9 1 1.1];
 Properties.vlist                = 0; % [-150 -100 -60 -40 -20 -10 -5 0 5 10 20 40 60 100 150]; % mm/s
-Properties.toSave               = 'prop_ad100Calculated_v10_ph0';
+Properties.toSave               = 'prop_ad1000Calculated_v9_ph0_shapes';
 %-------------- If Load Properties --------------%
 Properties.toLoad               = 'struct_properties_AD_Test';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Sequence %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %-------------- If New Sequence --------------%
-Sequence.nPulses                = 100; 
-Sequence.v9_v10                 = 'v10';        %v9 = spoiler before Acq, v10 = spoiler after Acq
+Sequence.nPulses                = 1000; 
+Sequence.v9_v10                 = 'v9';        %v9 = spoiler before Acq, v10 = spoiler after Acq
 Sequence.type                   = 'FISP';
-Sequence.nLobes                 = 2;
+Sequence.nLobes                 = 5;
 Sequence.FAmin                  = 0; % Degree
 Sequence.FAmax                  = 55; % Degree
 Sequence.FAnoise                = 5; %Degree, noise = FAnoise*rand -FAnoise/2 
-Sequence.lobeShape              = {"sin"};
+Sequence.lobeShape              = {"sin", "cos", "sin", "cos", "sin"};
 Sequence.skipTR                 = 0; % nb of TR that have FA=0 between lobes, can be 0;
 Sequence.phases                 = 0; % 0: no alternance, 2: pi increments, 4: pi/2 increments  
 Sequence.Ncycles                = 4;            % Dephasing cycles
 Sequence.m0                     = [0, 0, 1];    % No inversion, [0,0,-1] if inversion
 Sequence.dispFlag               = 1;            % 1 to plot seq time course
-Sequence.toSave                 = 'seq_ad100Calculated_v10_ph0'; 
+Sequence.toSave                 = 'seq_ad1000Calculated_v9_ph0_shapes'; 
 %-------------- If Load Sequence --------------%
 Sequence.toLoad                 = 'sequence_Test_07_01_2020_Calculated.mat';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Dico %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Dico.saveName                   = 'dico_ad100Calculated_v10_ph0';
+Dico.saveName                   = 'dico_ad1000Calculated_v9_ph0_shapes';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% VarAff %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 VariablesAff.T1aff              = 1500;      

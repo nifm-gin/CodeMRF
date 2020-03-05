@@ -45,7 +45,7 @@ Sequence.toSave                 = 'seq_ad100Calculated_v9_ph0';
 Sequence.toLoad                 = 'sequence_Test_07_01_2020_Calculated.mat';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Dico %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Dico.saveName                   = 'dico_ad100Calculated_v10_ph0';
+Dico.saveName                   = 'dico_ad100Calculated_v9_ph0';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% VarAff %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 VariablesAff.T1aff              = 1500;      
