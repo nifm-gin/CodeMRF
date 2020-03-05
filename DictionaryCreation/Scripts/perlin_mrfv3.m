@@ -1,8 +1,14 @@
 % Perlin noise algorithm
 function I = perlin_mrfv3( nbRandomPts, scale )
 
+if nbRandomPts < 3
+    randoms = rand( 3, 1 );
+else
+    randoms = rand( nbRandomPts, 1 );
+end
+
 % First, generate random numbers
-randoms = rand( nbRandomPts, 1 );
+% randoms = rand( nbRandomPts, 1 );
 
 step  = 1/scale;
 nbPts = scale*nbRandomPts;
