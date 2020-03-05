@@ -1,25 +1,25 @@
 clear all
-
+% Properties.vlist=0;
 %% Load images + renormalization
 Images=struct;
-Images.Nimages=500;
-Images.dossier_visu='D:\Experiments\2016\Novembre\2016-11-16\20161116_091617_2016_11_16_1_1\19\pdata\1';
+Images.Nimages=1000;
+Images.dossier_visu='/home_ldap/_SHARE/2020_AurelienSequences/20200305_104453_tube_1_2/23/pdata/1';
 
 dcm2matrix_MRFv3;
 fp_normalization_MRFv3;
 
 %% Load dico
 % load('D:\MATLAB\MRF_v3_SliceProfile_flux\Dictionnaires\sinus_5_lobes_invOnOff_FAaltOnOff\dico_5lobessinus1_v10_4cycles_inv_FApos_prop20170519_fulldf.mat')
-load('D:\MATLAB\MRF_v3_SliceProfile_flux\Dictionnaires\Dico_flux\dico_2016-06-01-2_v9_4cycles_FApos_prop20170519_flux.mat')
-
+load('/home_ldap/_SHARE/2020_AurelienSequences/Dictionaries/dico_ad1000Calculated_v10_ph0_shapes.mat')
+load('/home_ldap/_SHARE/2020_AurelienSequences/CodeMRF/SequencesAndProperties/prop_ad1000Calculated_v10_ph0_shapes_Calculated.mat')
 % Rescale vlist if experimental SliceThickness different from the dictionary slice thickness (usually 1mm)
 % Properties.vlist=Properties.vlist*Images.PVM_SliceThick/Parameters.SliceThickness;
  
 
-%% Reco sans a priori sur B1 & affichage des résultats
+%% Reco sans a priori sur B1 & affichage des rï¿½sultats
 Reconstruction=struct;
 Reconstruction.treshholdOnOff='On'; if strcmp(Reconstruction.treshholdOnOff,'On')
-                                        Reconstruction.seuil=0.95;
+                                        Reconstruction.seuil=0.5;
                                     end
 if length(Properties.vlist)>1
     analyse_flux_MRFv3;
@@ -52,7 +52,7 @@ clear h filename k
 
 
 %% Reco avec a priori sur B1 (UNIQUEMENT SI UNE SEULE VITESSE !)
-% load('D:\MATLAB\MRF_v3_SliceProfile_flux\Data\2017-01-11\Cartes de référence\allmaps.mat', 'B1relMap')
+% load('D:\MATLAB\MRF_v3_SliceProfile_flux\Data\2017-01-11\Cartes de rï¿½fï¿½rence\allmaps.mat', 'B1relMap')
 % Reconstruction=struct;
 % 
 % Reconstruction.treshholdOnOff='On'; if strcmp(Reconstruction.treshholdOnOff,'On')

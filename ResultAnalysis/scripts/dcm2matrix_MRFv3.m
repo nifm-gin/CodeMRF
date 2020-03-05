@@ -1,4 +1,4 @@
-Images.dossier=strcat(Images.dossier_visu,'\dicom\');
+Images.dossier=strcat(Images.dossier_visu,'/dicom/');
 if Images.Nimages>999
     X=dicomread(strcat(Images.dossier,'MRIm0001.dcm'));
 elseif Images.Nimages>99
@@ -28,7 +28,7 @@ for i=1:Images.Nimages
 end
 
 
-visu_pars=fopen(strcat(Images.dossier_visu,'\visu_pars'),'r','ieee-le');
+visu_pars=fopen(strcat(Images.dossier_visu,'/visu_pars'),'r','ieee-le');
 texteVisuPars=char(fread(visu_pars,[inf],'int8'));
 fclose(visu_pars);
 texteVisuPars=texteVisuPars(:)';
