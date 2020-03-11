@@ -95,7 +95,6 @@ TR=TR';
 %     TE=8+5*perlin_mrfv3(nPulses/50,50);
 TE=TR/2;
 %     TE=min(TR/2,7.5+10*perlin_mrfv3(nPulses/20,20));
-
 seqOut = seqIn;
 seqOut.FA = FA;
 seqOut.TE = TE;

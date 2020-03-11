@@ -1,11 +1,11 @@
-function [] = sequence2txt_mrfv3(rootDir, name, Sequence)
+function [] = sequence2txt_mrfv3(Dir, name, Sequence)
 % %% Creation of the directory
 % dossier=strcat('D:\MATLAB\MRF_v2\Data\S�quences_et_dicos\',date);
 % mkdir(dossier);
 % cd(dossier);
 
 %% Creation of the text file
-fid = fopen(strcat(rootDir, 'SequencesAndProperties/TextSequences/', name,'.txt'),'w');
+fid = fopen(strcat(Dir, name,'.txt'),'w');
 
 
 % Writing the sequence

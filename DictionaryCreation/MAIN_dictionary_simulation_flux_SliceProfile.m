@@ -11,100 +11,62 @@ rootDir = tmpRootDir(1:idx(end));
 
 [toDo, PulseProfile, Properties, Sequence, Dico] = readParameters([rootDir, 'DictionaryCreation/dicoSimParameters/', toRead]);
 
-fprintf('  Parameter file loaded \n')
+assert(mkdir([rootDir, 'DictionaryCreation/Results/', Dico.saveName]))
+copyfile([rootDir, 'DictionaryCreation/dicoSimParameters/', toRead], [rootDir, 'DictionaryCreation/Results/',Dico.saveName, '/', toRead]);
+% saveName = [Dico.saveName '_]
+
+fprintf('  Parameter file loaded and copied\n')
 
 %% PROPERTIES
 fprintf('  Properties ... ')
-% toDo.genpropertiesYesNo='No';
 if toDo.genProperties
-    %     niveau = Properties.niveau; %%%%%%%%%%%%%%%%%%%% à changer
     
-    %     Properties.vlist = 0;% [-150 -100 -60 -40 -20 -10 -5 0 5 10 20 40 60 100 150]; % mm/s
     [Properties] = genproperties_mrfv3(Properties);
     fprintf('Generated \n')
-    if toDo.savePropStruct
-        save([rootDir, 'SequencesAndProperties/', Properties.toSave, '_', PulseProfile.PulseShape, '.mat'], 'Properties')
-        fprintf('  Properties structure saved \n')
-    end
 else
     load([rootDir, 'SequencesAndProperties/', Properties.toLoad, '.mat'])
     fprintf('Loaded \n')
 end
 
+if toDo.savePropStruct
+        %         save([rootDir, 'SequencesAndProperties/', Properties.toSave, '_', PulseProfile.PulseShape, '.mat'], 'Properties')
+        save([rootDir, 'DictionaryCreation/Results/', Dico.saveName, '/prop_', Dico.saveName, '.mat'], 'Properties')
+        fprintf('  Properties structure saved \n')
+end
+
 %% SEQUENCE
 fprintf('  Sequence ... ')
-% toDo.gensequenceYesNo='Yes';
 if toDo.genSequence
-    %     Sequence.nPulses = 500;
-    %     Sequence.v9_v10 = 'v10'; %v9 = spoiler before Acq, v10 = spoiler after Acq
-    %     Sequence.Ncycles = 4; % Dephasing cycles
-    %     Sequence.m0 = [0, 0, 1]; % No inversion, [0,0,-1] if inversion
-    %
-    %     dispFlag = 1; % 1 to plot seq time course
+    
     Sequence = genSeq(Sequence);
     fprintf('Generated \n')
-    if toDo.saveSeqStruct
-        save([rootDir, 'SequencesAndProperties/', Sequence.toSave, '_', PulseProfile.PulseShape, '.mat'], 'Sequence');
-        fprintf('  Sequence structure saved \n')
-    end
 else
-    % Sequence=load('D:\MATLAB\MRF_v3_SliceProfile_flux\Sequences et proprietes du milieu\sequence_2016-08-12_1.mat');
-    % Sequence=load('/media/aurelien/QQCHSE/MRF_v3_SliceProfile_flux/Séquences et propriétés du milieu/sequence_2016-08-12_1.mat');
     load([rootDir, 'SequencesAndProperties/', Sequence.toLoad, '.mat']);
     fprintf('Loaded \n')
+end
+
+if toDo.saveSeqStruct
+        %         save([rootDir, 'SequencesAndProperties/', Sequence.toSave, '_', PulseProfile.PulseShape, '.mat'], 'Sequence');
+        save([rootDir, 'DictionaryCreation/Results/', Dico.saveName, '/seq_', Dico.saveName, '.mat'], 'Properties')
+        fprintf('  Sequence structure saved \n')
 end
 
 if toDo.dispSeq
     sequenceDisplay(Sequence);
 end
 
-%% Calcul du dictionnaire ?
-% toDo.dicoYesNo='Yes';
-
-%% Affichage variations ?
-% toDo.affvarYesNo='Yes';
-% if strcmp(toDo.affvarYesNo,'Yes')
-%     VariablesAff=struct;
-%     VariablesAff.T1aff=1500;
-%     VariablesAff.T2aff=100;
-%     VariablesAff.dfaff=0;
-%     VariablesAff.vaff=0;
-%     VariablesAff.B1relaff=1;
-% end
-%% Test de robustesse au bruit ?
-% toDo.testYesNo='Yes';
-% if strcmp(toDo.testYesNo,'Yes')
-%     TestRobustnessToNoise=struct;
-%     TestRobustnessToNoise.SNR=2;
-% end
-
-%% Enregistrement de la séquence et/ou du dictionnaire ?
-% toDo.savetxtYesNo='Yes';
-%  if strcmp(toDo.savetxtYesNo,'Yes')
-%      name=strcat('sequence_14_02_2020_',PulseProfile.PulseShape);
-%  end
-% ToDo.savematYesNo='No';        if strcmp(ToDo.savemattYesNo,'Yes')
-%                                   name_dico=strcat('dico_sequence_2016-07-27_1_',pulseshape); end
-
-%% Propriétés du milieuToDo.savetxtYesNo='Yes';
-
-%% Creation d'une sequence
 
 %% Profil de coupe
-% Pulse d'excitation
-PulseProfile = loadPulseProfileFAv([rootDir, 'DictionaryCreation/PulseProfiles/PulseDictionaries/', PulseProfile.toLoad], PulseProfile);
+if isempty(PulseProfile.toLoad)
+    fprintf('  No pulse profile to load\n')
+else
+    PulseProfile = loadPulseProfileFAv([rootDir, 'DictionaryCreation/PulseProfiles/PulseDictionaries/', PulseProfile.toLoad], PulseProfile);
+    fprintf('  Pulse profile loaded\n')
+end
 
-% [PulseProfile.Rot, PulseProfile.FAlistdeg, PulseProfile.positions_mm, PulseProfile.SliceThickness_th_mm, PulseProfile.p0, PulseProfile.Nspins, PulseProfile.flow_velocities,PulseProfile.dflist] = ...
-%     loadPulseProfileFAv([rootDir, 'DictionaryCreation/PulseProfiles/PulseDictionaries/',PulseProfile.toLoad]);
-
-% PulseProfile = load([rootDir, 'DictionaryCreation/PulseProfiles/PulseDictionaries/',PulseProfile.toLoad]);
-
-% Pulse d'inversion
+%% Pulse d'inversion
 if Sequence.m0(3)==-1 %%%%%%%%%%%%  /!\ Not Tested %%%%%%%%%%%%%%%%%%%%%%
-    
-    %InvPulseProfile=load('D:\MATLAB\MRF_v3_SliceProfile_flux\Creation de dictionnaire\Pulse Profiles\Pulse d''inversion\matrice_de_rotation_InvPulse.mat','M0','flow_velocities');
     InvPulseProfile=load([rootDir 'DictionaryCreation/PulseProfiles/InversionPulse/matrice_de_rotation_InvPulse.mat'], 'M0', 'flow_velocities');
-    %InvPulseProfile=load("/media/aurelien/QQCHSE/MRF_v3_SliceProfile_flux/Création de dictionnaire/Pulse Profiles/Pulse d'inversion/matrice_de_rotation_InvPulse.mat",'M0','flow_velocities');
 end
 
 %% Preparation du dictionnaire
@@ -119,63 +81,92 @@ end
 
 %% Calcul du dictionnaire
 if toDo.computeDico
-    fprintf('  Generating dictionary ... ')
-    clear dico_flux dictionary
-    
-    if length(Properties.vlist) == 1 % If one flow velocity in vox properties
-        saveAsFlux = 0; %Determines the variable to save in the end
-        
-        % Find values in PulseProfile.flow_velocities that are the closest
-        % to Properties.vlist
-        %         indicev = find( abs(PulseProfile.flow_velocities(:)-Properties.vlist) == min(abs(PulseProfile.flow_velocities(:)-Properties.vlist)) );
-        %         PulseProfile.Rot = PulseProfile.Rot(:,:,:,:,indicev(1),:);
-        [ ~, indicev ] = min(abs(PulseProfile.flow_velocities-Properties.vlist));
-        PulseProfile.Rot = PulseProfile.Rot(:,:,:,:,indicev,:);
-        
-        if Sequence.m0(3) == -1
-%             indicevinv = find(abs(InvPulseProfile.flow_velocities(:)-Properties.vlist) == min(abs(InvPulseProfile.flow_velocities(:)-Properties.vlist)));
-            [ ~, indicevinv ] = min(abs(InvPulseProfile.flow_velocities(:)-Properties.vlist));
-            InvPulseProfile.M0=InvPulseProfile.M0(:,:,indicevinv);
-%             dictionary = calculdico_1v_gradmom1_mrfvc(Parameters, Properties, PulseProfile, Sequence,InvPulseProfile);
-            dictionary = calculdico_1v_gradmom1_mrfv3(Parameters, Properties, PulseProfile, Sequence,InvPulseProfile);
-        else
-            dictionary = calculdico_1v_gradmom1_mrfv3(Parameters, Properties, PulseProfile, Sequence);
-        end
-        fprintf('Done \n')
-        fprintf('    Saving the dictionary... ')
-        save([rootDir, 'Dictionaries/', Dico.saveName], 'dictionary',  '-v7.3')
-        fprintf('Done \n')
-        clear indicev indicevinv
-    else
-        saveAsFlux = 1;
-        vlist_svg=Properties.vlist;
-        Rot_svg=PulseProfile.Rot;
-        if Sequence.m0(3)==-1
-            M0_svg=InvPulseProfile.M0;
-        end
-        for kv=1:length(vlist_svg)
-            disp(strcat('debut du n',num2str(kv),' sur ',num2str(length(vlist_svg))))
-            Properties.vlist=vlist_svg(kv);
-            indicev=find(abs(PulseProfile.flow_velocities(:)-Properties.vlist)==min(abs(PulseProfile.flow_velocities(:)-Properties.vlist)));
-            PulseProfile.Rot=Rot_svg(:,:,:,:,indicev(1),:);
-            if Sequence.m0(3)==-1
-                indicevinv=find(abs(InvPulseProfile.flow_velocities(:)-Properties.vlist)==min(abs(InvPulseProfile.flow_velocities(:)-Properties.vlist)));
-                InvPulseProfile.M0=M0_svg(:,:,indicevinv);
-                dico_flux(:,:,kv) = calculdico_1v_gradmom1_mrfv3(Parameters, Properties,PulseProfile, Sequence,InvPulseProfile);
-            else
-                dico_flux(:,:,kv) = calculdico_1v_gradmom1_mrfv3(Parameters, Properties,PulseProfile, Sequence);
+    switch Dico.method
+        case 'EPG'
+            fprintf('  EPG computation ... \n')
+            
+            % Putting lists in separate variables to avoid passing full
+            % structures to parfor
+            T1list = Properties.T1list;
+            T2list = Properties.T2list;
+            nP = Sequence.nPulses;
+            FA = Sequence.FA;
+            TR = Sequence.TR;
+            
+            dictionary = zeros(numel(T1list), nP);
+            if isempty(gcp)
+                delete(gcp('nocreate'))
+                parpool;
             end
-        end
-        Properties.vlist=vlist_svg;
-        fprintf('Done \n')
-        fprintf('  Saving the dictionary... ')
-        save([rootDir, 'Dictionaries/', Dico.saveName], 'dico_flux','-v7.3')
-        fprintf('Done \n')
-        
-        clear vlist_svg kv indicev Rot_svg
+
+            t = tic;
+            parfor i = 1:numel(T1list)
+            %     fprintf('        %i\n',i)
+                [dictionary(i,:), ~] = SPGR_Plain_NoDIff_EPGTest_Modif(nP, T1list(i)*1e-3, T2list(i)*1e-3, [], FA, TR*1e-3);
+            end
+            fprintf('  Computation completed in %i s\n', round(toc(t)))
+            
+            fprintf('  Saving the dictionary... ')
+            save([rootDir, 'DictionaryCreation/Results/', Dico.saveName, '/dico_', Dico.saveName], 'dictionary',  '-v7.3')
+            fprintf('Done \n')
+            
+        otherwise
+            
+            fprintf("  Generating dictionary with Sandra's method ... ")
+            clear dico_flux dictionary
+            
+            if length(Properties.vlist) == 1 % If one flow velocity in vox properties
+                saveAsFlux = 0; %Determines the variable to save in the end
+                
+                % Find values in PulseProfile.flow_velocities that are the closest
+                % to Properties.vlist
+                [ ~, indicev ] = min(abs(PulseProfile.flow_velocities-Properties.vlist));
+                PulseProfile.Rot = PulseProfile.Rot(:,:,:,:,indicev,:);
+                
+                if Sequence.m0(3) == -1
+                    %             indicevinv = find(abs(InvPulseProfile.flow_velocities(:)-Properties.vlist) == min(abs(InvPulseProfile.flow_velocities(:)-Properties.vlist)));
+                    [ ~, indicevinv ] = min(abs(InvPulseProfile.flow_velocities(:)-Properties.vlist));
+                    InvPulseProfile.M0=InvPulseProfile.M0(:,:,indicevinv);
+                    %             dictionary = calculdico_1v_gradmom1_mrfvc(Parameters, Properties, PulseProfile, Sequence,InvPulseProfile);
+                    dictionary = calculdico_1v_gradmom1_mrfv3(Parameters, Properties, PulseProfile, Sequence,InvPulseProfile);
+                else
+                    dictionary = calculdico_1v_gradmom1_mrfv3(Parameters, Properties, PulseProfile, Sequence);
+                end
+                fprintf('Done \n')
+                fprintf('  Saving the dictionary... ')
+                save([rootDir, 'DictionaryCreation/Results/', Dico.saveName, '/dico_', Dico.saveName], 'dictionary',  '-v7.3')
+                fprintf('Done \n')
+                clear indicev indicevinv
+            else
+                saveAsFlux = 1;
+                vlist_svg=Properties.vlist;
+                Rot_svg=PulseProfile.Rot;
+                if Sequence.m0(3)==-1
+                    M0_svg=InvPulseProfile.M0;
+                end
+                for kv=1:length(vlist_svg)
+                    disp(strcat('debut du n',num2str(kv),' sur ',num2str(length(vlist_svg))))
+                    Properties.vlist=vlist_svg(kv);
+                    indicev=find(abs(PulseProfile.flow_velocities(:)-Properties.vlist)==min(abs(PulseProfile.flow_velocities(:)-Properties.vlist)));
+                    PulseProfile.Rot=Rot_svg(:,:,:,:,indicev(1),:);
+                    if Sequence.m0(3)==-1
+                        indicevinv=find(abs(InvPulseProfile.flow_velocities(:)-Properties.vlist)==min(abs(InvPulseProfile.flow_velocities(:)-Properties.vlist)));
+                        InvPulseProfile.M0=M0_svg(:,:,indicevinv);
+                        dico_flux(:,:,kv) = calculdico_1v_gradmom1_mrfv3(Parameters, Properties,PulseProfile, Sequence,InvPulseProfile);
+                    else
+                        dico_flux(:,:,kv) = calculdico_1v_gradmom1_mrfv3(Parameters, Properties,PulseProfile, Sequence);
+                    end
+                end
+                Properties.vlist=vlist_svg;
+                fprintf('Done \n')
+                fprintf('  Saving the dictionary... ')
+                save([rootDir, 'DictionaryCreation/Results/', Dico.saveName, '/dico_', Dico.saveName], 'dico_flux','-v7.3')
+                fprintf('Done \n')
+                
+                clear vlist_svg kv indicev Rot_svg
+            end
     end
 end
-
 
 %% Affichage des variations du signal avec les différents paramètres
 if toDo.dispVar
@@ -209,13 +200,13 @@ end
 %% Enregistrement du dictionnaire et de la sequence en .txt
 if toDo.exportSeqPV6
     fprintf('  Exporting the sequence to a .txt file... ')
-    name = strcat(Sequence.toSave,PulseProfile.PulseShape);
-    
-    if exist(strcat(name,'.mat'),'file')==2
-        name=strcat(name,datestr(now,'HH-MM-SS'),pulseshape);
-        display(strcat('Le fichier existe deja, le nouveau fichier est renomme en ',name, ' '))
+    %     name = strcat(Sequence.toSave,PulseProfile.PulseShape);
+    %     name = saveName
+    if exist(strcat([Dico.saveName, '_PV6'],'.txt'),'file')==2
+        Dico.saveName=strcat(Dico.saveName, datestr(now,'HH-MM-SS'));
+        display(strcat('Le fichier existe deja, le nouveau fichier est renomme en ', Dico.saveName, ' '))
     end
-    sequence2txt_mrfv3(rootDir, name, Sequence);
+    sequence2txt_mrfv3([rootDir, 'DictionaryCreation/Results/', Dico.saveName, '/'], [Dico.saveName, '_PV6'], Sequence);
     fprintf('Done \n')
 end
 
