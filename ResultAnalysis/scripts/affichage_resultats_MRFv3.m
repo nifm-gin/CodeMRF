@@ -2,10 +2,10 @@ figure('Name','MRF reconstruction results','units','normalized','outerposition',
 
 if strcmp(Reconstruction.treshholdOnOff,'Off')
 RecoMaps=struct;
-RecoMaps.T1map_dicom=Properties.T1list(Reconstruction.t_exp_dicom);
-RecoMaps.T2map_dicom=Properties.T2list(Reconstruction.t_exp_dicom);
-RecoMaps.dfmap_dicom=Properties.dflist(Reconstruction.t_exp_dicom);
-RecoMaps.B1relmap_dicom=Properties.B1rellist(Reconstruction.t_exp_dicom);
+RecoMaps.T1map_dicom=Properties.T1list(Reconstruction.idxMatch);
+RecoMaps.T2map_dicom=Properties.T2list(Reconstruction.idxMatch);
+RecoMaps.dfmap_dicom=Properties.dflist(Reconstruction.idxMatch);
+RecoMaps.B1relmap_dicom=Properties.B1rellist(Reconstruction.idxMatch);
 RecoMaps.vmap_dicom=Properties.vlist(Reconstruction.t_exp_v);
 
 subplot(2,3,1)
@@ -45,7 +45,7 @@ daspect([1 1 1])
 
 subplot(2,3,6)
 imagesc(Reconstruction.max_innerproduct)
-caxis([0.9 1])
+caxis([0.5 1])
 colorbar
 title('Maximum innerproduct map')
 daspect([1 1 1])
@@ -54,16 +54,16 @@ daspect([1 1 1])
 else
 RecoMaps=struct;
 Reconstruction.area=find(Reconstruction.max_innerproduct>Reconstruction.seuil); % ---------------------------------------------------------- seuil
-RecoMaps.T1map_dicom=Properties.T1list(Reconstruction.t_exp_dicom);
+RecoMaps.T1map_dicom=Properties.T1list(Reconstruction.idxMatch);
 RecoMaps.T1map_treshhold_dicom=zeros(Images.Nx,Images.Ny);
 RecoMaps.T1map_treshhold_dicom(Reconstruction.area)=RecoMaps.T1map_dicom(Reconstruction.area);
-RecoMaps.T2map_dicom=Properties.T2list(Reconstruction.t_exp_dicom);
+RecoMaps.T2map_dicom=Properties.T2list(Reconstruction.idxMatch);
 RecoMaps.T2map_treshhold_dicom=zeros(Images.Nx,Images.Ny);
 RecoMaps.T2map_treshhold_dicom(Reconstruction.area)=RecoMaps.T2map_dicom(Reconstruction.area);
-RecoMaps.dfmap_dicom=Properties.dflist(Reconstruction.t_exp_dicom);
+RecoMaps.dfmap_dicom=Properties.dflist(Reconstruction.idxMatch);
 RecoMaps.dfmap_treshhold_dicom=zeros(Images.Nx,Images.Ny);
 RecoMaps.dfmap_treshhold_dicom(Reconstruction.area)=RecoMaps.dfmap_dicom(Reconstruction.area);
-RecoMaps.B1relmap_dicom=Properties.B1rellist(Reconstruction.t_exp_dicom);
+RecoMaps.B1relmap_dicom=Properties.B1rellist(Reconstruction.idxMatch);
 RecoMaps.B1relmap_treshhold_dicom=zeros(Images.Nx,Images.Ny);
 RecoMaps.B1relmap_treshhold_dicom(Reconstruction.area)=RecoMaps.B1relmap_dicom(Reconstruction.area);
 RecoMaps.vmap_dicom=Properties.vlist(Reconstruction.t_exp_v);

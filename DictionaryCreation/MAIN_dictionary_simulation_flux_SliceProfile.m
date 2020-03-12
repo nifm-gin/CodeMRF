@@ -47,7 +47,7 @@ end
 
 if toDo.saveSeqStruct
         %         save([rootDir, 'SequencesAndProperties/', Sequence.toSave, '_', PulseProfile.PulseShape, '.mat'], 'Sequence');
-        save([rootDir, 'DictionaryCreation/Results/', Dico.saveName, '/seq_', Dico.saveName, '.mat'], 'Properties')
+        save([rootDir, 'DictionaryCreation/Results/', Dico.saveName, '/seq_', Dico.saveName, '.mat'], 'Sequence')
         fprintf('  Sequence structure saved \n')
 end
 

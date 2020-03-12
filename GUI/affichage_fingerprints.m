@@ -22,7 +22,7 @@ function varargout = affichage_fingerprints(varargin)
 
 % Edit the above text to modify the response to help affichage_fingerprints
 
-% Last Modified by GUIDE v2.5 24-Jun-2016 16:29:23
+% Last Modified by GUIDE v2.5 12-Mar-2020 10:20:39
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -335,16 +335,21 @@ function pushbutton_load_sequence_rand_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 % clear T1 T2 df handles.T1 handles.T2 handles.df handles.T1list handles.T2list hangles.dflist handles.dictionary handles.TE handles.TR handles.M0 handles.Ncycles handles.nPulses B1 handles.B1 handles.B1list handles.fingerprint
 
-
-[filename, pathname,] = uigetfile('*.mat', 'Choisir le fichier');
-name=[pathname filename];
-load(name);
+tmpDir  = fileparts(mfilename('fullpath'));
+idx = strfind(tmpDir,'/');
+rootDir = tmpDir(1:idx(end));
+[filename, pathname] = uigetfile('*.mat', 'Choose dico_*.mat file', [rootDir, 'DictionaryCreation/Results/']);
+% name=[pathname filename];
+load([pathname, filename], 'dictionary');
+splitPath = split(pathname, filesep);
+load([pathname, 'prop_', splitPath{end-1}, '.mat'], 'Properties');
+load([pathname, 'seq_', splitPath{end-1}, '.mat'], 'Sequence');
 T1=unique(Properties.T1list);
 T2=unique(Properties.T2list);
-df=unique(Properties.dflist);
+% df=unique(Properties.dflist);
 handles.T1=T1;
 handles.T2=T2;
-handles.df=df;
+% handles.df=df;
 handles.T1list=Properties.T1list;
 handles.T2list=Properties.T2list;
 handles.dflist=Properties.dflist;
@@ -353,7 +358,7 @@ handles.dictionary=dictionary;
 elseif exist('dico_flux')
 handles.dictionary=dico_flux;
 else
-    disp('Erreur, pas de dictionnaire')
+    disp('Error : no dictionary')
 end
 % handles.indices=indices; % VERIFIER SI UTILE
 handles.TE=Sequence.TE;
@@ -364,44 +369,62 @@ handles.Ncycles=Sequence.Ncycles;
 handles.nPulses=Sequence.nPulses;
 
 % if exist('Properties.B1rellist')
+if length(Properties.B1rel)>1
     set(handles.slider_B1,'Enable','on');
-    B1=unique(Properties.B1rellist);
-    handles.B1=B1;
+%     B1=unique(Properties.B1rel);
+    handles.B1=Properties.B1rel;
     handles.B1list=squeeze(Properties.B1rellist);
-% else
-%     B1=1;
-%     handles.B1=1;
-%     handles.B1list=1*ones(1,length(Properties.T1list));
-%     set(handles.slider_B1,'Enable','off');
-% end
+else
+    handles.B1=0;
+    handles.B1list=0;
+    set(handles.slider_B1,'Enable','off');
+end
 
-% if exist('Properties.vlist')
+if length(Properties.vlist)>1
     set(handles.slider_v,'Enable','on');
     handles.v=Properties.vlist;
-% else
-%     handles.v=0;
-%     set(handles.slider_v,'Enable','off');
-% end
-
-if length(B1)>1
-% set(handles.slider_B1'),'Min',1,'Max',length(B1),'Value',length(B1),'SliderStep',[1,1]/(length(B1)-1));
-set(handles.slider_B1,'Min',1,'Max',length(B1),'Value',find(abs(B1-1)==min(abs(B1-1))),'SliderStep',[1,1]/(length(B1)-1));
-end
-if length(handles.v)>1
-set(handles.slider_v,'Min',1,'Max',length(handles.v),'Value',1,'SliderStep',[1,1]/(length(handles.v)-1));
 else
-set(handles.slider_v,'Value',1);    
+     handles.v=0;
+     set(handles.slider_v,'Enable','off');
 end
+
+if length(Properties.df)>1
+    handles.df = Properties.df;
+    set(handles.slider_df,'Enable','on');
+else
+    handles.df = 0;
+    set(handles.slider_df,'Enable','off');
+end
+
+if length(Properties.B1rel)>1
+% set(handles.slider_B1'),'Min',1,'Max',length(B1),'Value',length(B1),'SliderStep',[1,1]/(length(B1)-1));
+    set(handles.slider_B1,'Min',1,'Max',length(handles.B1),'Value',find(abs(handles.B1-1)==min(abs(handles.B1-1))),'SliderStep',[1,1]/(length(handles.B1)-1));
+else
+%     set(handles.slider_B1,'Min',-1,'Max',1 ,'Value',find(abs(B1-1)==min(abs(B1-1))),'SliderStep',[0,0]);
+end
+
+if length(handles.v)>1
+    set(handles.slider_v,'Min',1,'Max',length(handles.v),'Value',1,'SliderStep',[1,1]/(length(handles.v)-1));
+else
+%     set(handles.slider_v,'Min', 0, 'Max', 0, 'Value',find(abs(handles.v)==min(abs(handles.v))),'SliderStep',[0,0]);   
+end
+
+if length(handles.df) > 1
+    set(handles.slider_df,'Min',1,'Max',length(handles.df),'Value',find(abs(handles.df)==min(abs(handles.df))),'SliderStep',[1,1]/(length(handles.df)-1));
+else
+%     set(handles.slider_df,'Min',0,'Max',0,'Value',find(abs(df)==min(abs(df))),'SliderStep',[0,0]);
+end
+
 set(handles.slider_T1,'Min',1,'Max',length(T1),'Value',length(T1),'SliderStep',[1,1]/(length(T1)-1));
 klist=find(handles.T2(:)<handles.T1(round(get(handles.slider_T1,'Value'))));
 set(handles.slider_T2,'Min',1,'Max',klist(end),'Value',1,'SliderStep',[1,1]/(klist(end)-1));
-set(handles.slider_df,'Min',1,'Max',length(df),'Value',find(abs(df)==min(abs(df))),'SliderStep',[1,1]/(length(df)-1));
+
+    
 set(handles.texte_T1value,'String',strcat(num2str(handles.T1(round(get(handles.slider_T1,'Value')))),' ms'));
 set(handles.texte_T2value,'String',strcat(num2str(handles.T2(round(get(handles.slider_T2,'Value')))),' ms'));
 set(handles.texte_dfvalue,'String',strcat(num2str(handles.df(round(get(handles.slider_df,'Value')))),' Hz'));
 set(handles.texte_B1value,'String',num2str(handles.B1(round(get(handles.slider_B1,'Value')))));
 set(handles.texte_vvalue,'String',strcat(num2str(handles.v(round(get(handles.slider_v,'Value')))),' mm/s'));
-
 
 cla(handles.graphe_FA)
 plot(handles.graphe_FA,handles.FA*180/pi)
@@ -420,7 +443,8 @@ ylabel(handles.graphe_TR,'TR & TE(ms)');
 ylim(handles.graphe_TR,[0 max(handles.TR)+5])
 
 % handles.figFingerprint=handles.graphe_fingerprint');
-handles.fingerprint=handles.dictionary(find(handles.T1list(:)==handles.T1(round(get(handles.slider_T1,'Value'))) & handles.T2list(:)==handles.T2(round(get(handles.slider_T2,'Value'))) & handles.dflist(:)==handles.df(round(get(handles.slider_df,'Value'))) & handles.B1list(:)==handles.B1(round(get(handles.slider_B1,'Value')))),:,(round(get(handles.slider_v,'Value'))));
+handles.fingerprint=handles.dictionary(find(handles.T1list(:)==handles.T1(round(get(handles.slider_T1,'Value'))) & ...
+    handles.T2list(:)==handles.T2(round(get(handles.slider_T2,'Value'))) & handles.dflist(:)==handles.df(round(get(handles.slider_df,'Value'))) & handles.B1list(:)==handles.B1(round(get(handles.slider_B1,'Value')))),:,(round(get(handles.slider_v,'Value'))));
 
 cla(handles.graphe_fingerprint)
 plot(handles.graphe_fingerprint,abs(handles.fingerprint)./norm(abs(handles.fingerprint)));
@@ -472,4 +496,3 @@ function checkbox_normalization_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox_normalization
-
