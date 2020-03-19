@@ -1,5 +1,5 @@
-figure('Name','MRF reconstruction results','units','normalized','outerposition',[0 0 1 1])
-
+% figure('Name','MRF reconstruction results','units','normalized','outerposition',[0 0 1 1])
+figure('Name','MRF reconstruction results')
 if strcmp(Reconstruction.treshholdOnOff,'Off')
 
 subplot(2,3,1)
