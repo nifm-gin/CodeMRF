@@ -22,7 +22,7 @@ function varargout = dataVsMatch(varargin)
 
 % Edit the above text to modify the response to help dataVsMatch
 
-% Last Modified by GUIDE v2.5 17-Mar-2020 14:29:03
+% Last Modified by GUIDE v2.5 19-Mar-2020 15:10:56
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -78,16 +78,28 @@ function startButton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-%Get data from local env
+% Get data from local env
 handles.Images = evalin('base', 'Images');
 handles.dictionary = evalin('base', 'dictionary');
 handles.Reconstruction = evalin('base', 'Reconstruction');
 handles.Properties = evalin('base', 'Properties');
-handles.signalsDrawn = 0;
 
+% reset handles
+handles.signalsDrawn = 0;
+handles.x = 0; 
+handles.y = 0;
+handles.patch = zeros(handles.Images.Nx, handles.Images.Ny);
+set(handles.coordDisp, 'String', 'X: Y:');
+set(handles.matchIdx, 'String', 'Match #:');
+
+% clear plots
+cla(handles.rawDataPlot)
+cla(handles.signals)
+cla(handles.image1)
+cla(handles.image2)
+cla(handles.image3)
 % set(handles.rawDataPlot, 'PickableParts', 'all'); 
 % Set raw plot
-
 clickableImage(handles.rawDataPlot, squeeze(handles.Images.Images_dicom(:,:,round(size(handles.Images.Images_dicom,3)/2))))
 set(handles.rawDataPlot, 'ColorMap', gray);
 % Set slice selector initial value 
@@ -272,6 +284,10 @@ switch choice
             caxis(localHandle, [min(handles.Properties.B1rellist(handles.Reconstruction.idxMatch), [], 'All'), max(handles.Properties.B1rellist(handles.Reconstruction.idxMatch), [], 'All')])
             colorbar(localHandle)
         end
+    case 'Match #'
+        clickableImage(localHandle, handles.Reconstruction.idxMatch);
+        caxis(localHandle, [min(handles.Reconstruction.idxMatch, [], 'All'), max(handles.Reconstruction.idxMatch, [], 'All')])
+        colorbar(localHandle)
     otherwise
         clickableImage(localHandle, zeros(size(handles.Images.Images_dicom, 1), size(handles.Images.Images_dicom, 2)));
 end
@@ -308,7 +324,8 @@ end
 set(handles.coordDisp, 'String', sprintf('X: %i, Y: %i', x, y));
 handles.x = x;
 handles.y = y;
-drawSignals(hObject, eventdata, handles);
+drawSignals(hObject, eventdata, handles); % handles.patch is 0 outside this
+handles = guidata(hObject);
 guidata(hObject, handles)
 
 % --- Executes on mouse press over axes background.
@@ -324,9 +341,11 @@ set(handles.frameNum, 'String', sprintf('Frames : %i/%i', frame, size(handles.Im
 function drawSignals(hObject, eventdata, handles)
 % Executed when clicking on a plot
 X = 1:handles.Images.Nimages;
+handles.patch = zeros(handles.Images.Nx, handles.Images.Ny);
 if handles.avgSlider.Value == 1
     rawData = squeeze(handles.Images.Image_normalized_dicom(handles.x,handles.y,:));
     match = abs(handles.dictionary(handles.Reconstruction.idxMatch(handles.x,handles.y),:))/norm(abs(handles.dictionary(handles.Reconstruction.idxMatch(handles.x,handles.y),:)));
+    handles.patch(handles.x, handles.y) = 1;
 else
     avg = handles.avgSlider.Value;
     rawData = zeros(size(squeeze(handles.Images.Image_normalized_dicom(handles.x,handles.y,:))));
@@ -334,14 +353,17 @@ else
     count = 0;
     for i = 0:2*avg-2
         for j=0:2*avg-2
-            rawData = rawData + squeeze(handles.Images.Image_normalized_dicom(handles.x-avg-1+i,handles.y-avg-1+j,:));
-            match = match + abs(handles.dictionary(handles.Reconstruction.idxMatch(handles.x-avg-1+i,handles.y-avg-1+j),:))/norm(abs(handles.dictionary(handles.Reconstruction.idxMatch(handles.x-avg-1+i,handles.y-avg-1+j),:)));
+            rawData = rawData + squeeze(handles.Images.Image_normalized_dicom(handles.x-(avg-1)+i,handles.y-(avg-1)+j,:));
+            match = match + abs(handles.dictionary(handles.Reconstruction.idxMatch(handles.x-(avg-1)+i,handles.y-(avg-1)+j),:))/norm(abs(handles.dictionary(handles.Reconstruction.idxMatch(handles.x-avg-1+i,handles.y-avg-1+j),:)));
+            handles.patch(handles.x-(avg-1)+i,handles.y-(avg-1)+j)=1;
             count = count+1;
         end
     end
     rawData = rawData/count;
     match = match/count;
 end
+avgShow_Callback(hObject, eventdata, handles);
+guidata(hObject, handles);
 set(handles.matchIdx, 'String', sprintf('Match #: %i', handles.Reconstruction.idxMatch(handles.x,handles.y)));
 set(handles.signals, 'nextPlot','replacechildren');
 cla(handles.signals);
@@ -379,25 +401,24 @@ function avgShow_Callback(hObject, eventdata, handles)
 % hObject    handle to avgShow (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-hold(handles.rawDataPlot, 'on')
-red = cat(3, ones(handles.Images.Nx, handles.Images.Ny), zeros(handles.Images.Nx, handles.Images.Ny), zeros(handles.Images.Nx, handles.Images.Ny));
-patch = zeros(handles.Images.Nx, handles.Images.Ny);
-if handles.avgSlider.Value == 1
-    patch(handles.x, handles.y) = 1;
-else
-    avg = handles.avgSlider.Value;
-    for i = 0:2*avg-2
-        for j=0:2*avg-2
-            patch(handles.x-avg-1+i,handles.y-avg-1+j,:) = 1;
+switch handles.avgShow.Value
+    case 1
+        if numel(handles.rawDataPlot.Children)>1
+            handles.rawDataPlot.Children(1).Visible=0;
         end
-    end
+        hold(handles.rawDataPlot, 'on')
+        red = cat(3, ones(handles.Images.Nx, handles.Images.Ny), zeros(handles.Images.Nx, handles.Images.Ny), zeros(handles.Images.Nx, handles.Images.Ny));
+        axes(handles.rawDataPlot)
+        h = image(red, 'CDataMapping', 'Scaled', 'Parent', handles.rawDataPlot, 'AlphaData', handles.patch);
+        % set(h, 'AlphaData', patch);
+        set(get(handles.rawDataPlot, 'Children'), 'HitTest', 'off');
+        set(handles.rawDataPlot,'ButtonDownFcn', @getCoord);
+        set(get(handles.rawDataPlot, 'Children'), 'ButtonDownFcn', @getCoord);
+        set(handles.rawDataPlot,'xtick',[]); set(handles.rawDataPlot,'ytick',[]);
+    case 0
+        if numel(handles.rawDataPlot.Children)>1
+            handles.rawDataPlot.Children(1).Visible=0;
+        end
 end
-% axes(handles.rawDataPlot)
-h = image(red, 'CDataMapping', 'Scaled', 'Parent', handles.rawDataPlot, 'AlphaData', patch);
-% set(h, 'AlphaData', patch);
-set(get(handles.rawDataPlot, 'Children'), 'HitTest', 'off');
-set(handles.rawDataPlot,'ButtonDownFcn', @getCoord);
-set(get(handles.rawDataPlot, 'Children'), 'ButtonDownFcn', @getCoord);
-set(handles.rawDataPlot,'xtick',[]); set(handles.rawDataPlot,'ytick',[]);
 
 % Hint: get(hObject,'Value') returns toggle state of avgShow
