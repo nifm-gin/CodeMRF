@@ -4,7 +4,7 @@ figure
 plot(squeeze(Images.Image_normalized_dicom(kx,ky,:)))
 hold on
 plot(abs(dictionary(Reconstruction.idxMatch(kx,ky),:))/norm(abs(dictionary(Reconstruction.idxMatch(kx,ky),:))))
-
+legend('Raw', 'Match')
 
 % 
 % 
