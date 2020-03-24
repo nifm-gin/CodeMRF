@@ -88,7 +88,7 @@ handles.Properties = evalin('base', 'Properties');
 handles.signalsDrawn = 0;
 handles.x = 0; 
 handles.y = 0;
-handles.patch = zeros(handles.Images.Nx, handles.Images.Ny);
+handles.patch = zeros(handles.Images.nX, handles.Images.nY);
 set(handles.coordDisp, 'String', 'X: Y:');
 set(handles.matchIdx, 'String', 'Match #:');
 
@@ -313,7 +313,9 @@ function getCoord(hObject, eventdata)
 % handles    structure with handles and user data (see GUIDATA)
 handles = guidata(hObject);
 C = get(hObject, 'CurrentPoint');
-x=round(C(1,2));
+% need to inverse x and y to match with matlab index convention : x must be the
+% vertical dimension
+x=round(C(1,2)); 
 y=round(C(1,1));
 if x > size(handles.Images.Images_dicom,1)
     x = size(handles.Images.Images_dicom,1);
@@ -340,12 +342,13 @@ set(handles.frameNum, 'String', sprintf('Frames : %i/%i', frame, size(handles.Im
 
 function drawSignals(hObject, eventdata, handles)
 % Executed when clicking on a plot
-X = 1:handles.Images.Nimages;
-handles.patch = zeros(handles.Images.Nx, handles.Images.Ny);
+X = 1:handles.Images.nImages;
+handles.patch = zeros(handles.Images.nX, handles.Images.nY); % Initialize transparent mask for averaging region display
 if handles.avgSlider.Value == 1
     rawData = squeeze(handles.Images.Image_normalized_dicom(handles.x,handles.y,:));
-    match = abs(handles.dictionary(handles.Reconstruction.idxMatch(handles.x,handles.y),:))/norm(abs(handles.dictionary(handles.Reconstruction.idxMatch(handles.x,handles.y),:)));
-    handles.patch(handles.x, handles.y) = 1;
+    match = abs(handles.dictionary(handles.Reconstruction.idxMatch(handles.x,handles.y),:)) / ...
+        norm(abs(handles.dictionary(handles.Reconstruction.idxMatch(handles.x,handles.y),:)));
+    handles.patch(handles.x, handles.y) = 1; % Set visibility for current voxel
 else
     avg = handles.avgSlider.Value;
     rawData = zeros(size(squeeze(handles.Images.Image_normalized_dicom(handles.x,handles.y,:))));
@@ -354,13 +357,16 @@ else
     for i = 0:2*avg-2
         for j=0:2*avg-2
             rawData = rawData + squeeze(handles.Images.Image_normalized_dicom(handles.x-(avg-1)+i,handles.y-(avg-1)+j,:));
-            match = match + abs(handles.dictionary(handles.Reconstruction.idxMatch(handles.x-(avg-1)+i,handles.y-(avg-1)+j),:))/norm(abs(handles.dictionary(handles.Reconstruction.idxMatch(handles.x-avg-1+i,handles.y-avg-1+j),:)));
-            handles.patch(handles.x-(avg-1)+i,handles.y-(avg-1)+j)=1;
+            localMatch = abs(handles.dictionary(handles.Reconstruction.idxMatch(handles.x-(avg-1)+i,handles.y-(avg-1)+j),:));
+            match = match + localMatch./norm(localMatch);
+            handles.patch(handles.x-(avg-1)+i,handles.y-(avg-1)+j)=1; % Set visibility for current voxel
             count = count+1;
         end
     end
     rawData = rawData/count;
+    max(match)
     match = match/count;
+    max(match)
 end
 avgShow_Callback(hObject, eventdata, handles);
 guidata(hObject, handles);
@@ -407,7 +413,7 @@ switch handles.avgShow.Value
             handles.rawDataPlot.Children(1).Visible=0;
         end
         hold(handles.rawDataPlot, 'on')
-        red = cat(3, ones(handles.Images.Nx, handles.Images.Ny), zeros(handles.Images.Nx, handles.Images.Ny), zeros(handles.Images.Nx, handles.Images.Ny));
+        red = cat(3, ones(handles.Images.nX, handles.Images.nY), zeros(handles.Images.nX, handles.Images.nY), zeros(handles.Images.nX, handles.Images.nY));
         axes(handles.rawDataPlot)
         h = image(red, 'CDataMapping', 'Scaled', 'Parent', handles.rawDataPlot, 'AlphaData', handles.patch);
         % set(h, 'AlphaData', patch);
