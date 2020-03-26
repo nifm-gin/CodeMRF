@@ -23,7 +23,10 @@ function varargout = dataVsMatch(varargin)
 % Edit the above text to modify the response to help dataVsMatch
 
 % Last Modified by GUIDE v2.5 19-Mar-2020 15:10:56
-
+switch numel(varargin)
+    case 1
+        assert(isstruct(varargin{1}), 'Single argument must be a struct containing Images, Reconstruction, dictionary, Properties structures')
+end
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
@@ -52,6 +55,26 @@ function dataVsMatch_OpeningFcn(hObject, eventdata, handles, varargin)
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to dataVsMatch (see VARARGIN)
 
+switch numel(varargin)
+    case 0
+        handles.Images = struct;
+        handles.Reconstruction = struct;
+        handles.dictionary = struct;
+        handles.Properties = struct;
+    case 1
+        handles.Images = varargin{1}.Images;
+        handles.Reconstruction = varargin{1}.Reconstruction;
+        handles.dictionary = varargin{1}.dictionary;
+        handles.Properties = varargin{1}.Properties;
+    case 4
+        handles.Images = varargin{1};
+        handles.Reconstruction = varargin{2};
+        handles.dictionary = varargin{3};
+        handles.Properties = varargin{4};
+    otherwise
+        error('Inputs must be Images, Reconstruction, dictionary, Properties structures, on a struct containing them')
+end
+
 % Choose default command line output for dataVsMatch
 handles.output = hObject;
 % handles.Images = evalin('base', 'Images');
@@ -79,10 +102,10 @@ function startButton_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Get data from local env
-handles.Images = evalin('base', 'Images');
-handles.dictionary = evalin('base', 'dictionary');
-handles.Reconstruction = evalin('base', 'Reconstruction');
-handles.Properties = evalin('base', 'Properties');
+% handles.Images = evalin('base', 'Images');
+% handles.dictionary = evalin('base', 'dictionary');
+% handles.Reconstruction = evalin('base', 'Reconstruction');
+% handles.Properties = evalin('base', 'Properties');
 
 % reset handles
 handles.signalsDrawn = 0;
@@ -100,15 +123,15 @@ cla(handles.image2)
 cla(handles.image3)
 % set(handles.rawDataPlot, 'PickableParts', 'all'); 
 % Set raw plot
-clickableImage(handles.rawDataPlot, squeeze(handles.Images.Images_dicom(:,:,round(size(handles.Images.Images_dicom,3)/2))))
+clickableImage(handles.rawDataPlot, squeeze(handles.Images.Images_dicom(:,:,round(handles.Images.nImages/2))))
 set(handles.rawDataPlot, 'ColorMap', gray);
 % Set slice selector initial value 
-set(handles.sliceSelector, 'String', num2str(round(size(handles.Images.Images_dicom,4)/2)));
+set(handles.frameNum, 'String', 'Frame:');
 % Set slice selector range
 % maxPt = round(min(size(handles.Images.Images_dicom,1), size(handles.Images.Images_dicom,2))/2);
 maxPt = 5;
-set(handles.sliceSelector, 'Min', 1, 'Max', size(handles.Images.Images_dicom,4));
-set(handles.frameNum, 'String', sprintf('Frames : %i/%i', round(size(handles.Images.Images_dicom,3)/2), size(handles.Images.Images_dicom,3) ));
+set(handles.sliceSelector, 'Min', 1, 'Max', handles.Images.nZ);
+set(handles.frameNum, 'String', sprintf('Frame : %i/%i', round(handles.Images.nImages/2), handles.Images.nImages ));
 set(handles.avgSlider, 'Min', 1, 'Max', maxPt);
 set(handles.avgSlider, 'SliderStep', [1,1]/(maxPt-1), 'Value', 1)
 set(handles.avgDisp, 'String', sprintf('Averaging: 1'));
@@ -335,17 +358,19 @@ function signals_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to signals (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+disp(handles.sliceSelector.Value)
 C = get(hObject, 'CurrentPoint');
 frame = round(C(1,1));
-clickableImage(handles.rawDataPlot, squeeze(handles.Images.Images_dicom(:,:,frame)), gray)
-set(handles.frameNum, 'String', sprintf('Frames : %i/%i', frame, size(handles.Images.Images_dicom,3)));
+clickableImage(handles.rawDataPlot, squeeze(handles.Images.Images_dicom(:,:, handles.sliceSelector.Value, frame)), gray)
+set(handles.frameNum, 'String', sprintf('Frames : %i/%i', frame, handles.Images.nImages));
 
 function drawSignals(hObject, eventdata, handles)
 % Executed when clicking on a plot
+sliceIdx = handles.sliceSelector.Value;
 X = 1:handles.Images.nImages;
 handles.patch = zeros(handles.Images.nX, handles.Images.nY); % Initialize transparent mask for averaging region display
 if handles.avgSlider.Value == 1
-    rawData = squeeze(handles.Images.Image_normalized_dicom(handles.x,handles.y,:));
+    rawData = squeeze(handles.Images.Image_normalized_dicom(handles.x,handles.y, sliceIdx, :));
     match = abs(handles.dictionary(handles.Reconstruction.idxMatch(handles.x,handles.y),:)) / ...
         norm(abs(handles.dictionary(handles.Reconstruction.idxMatch(handles.x,handles.y),:)));
     handles.patch(handles.x, handles.y) = 1; % Set visibility for current voxel
