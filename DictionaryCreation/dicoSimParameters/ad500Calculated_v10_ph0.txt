@@ -1,18 +1,18 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% toDo %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-toDo.genProperties              = 1;
-toDo.genSequence                = 1;
-toDo.dispSeq                    = 1;
+toDo.genProperties              = 0;
+toDo.genSequence                = 0;
+toDo.dispSeq                    = 0;
 toDo.prepDico                   = 1;
 toDo.computeDico                = 1;
 toDo.dispVar                    = 0;
 toDo.testRobustness             = 0;
-toDo.savePropStruct             = 1;
-toDo.saveSeqStruct              = 1;
-toDo.exportSeqPV6               = 1;
+toDo.savePropStruct             = 0;
+toDo.saveSeqStruct              = 0;
+toDo.exportSeqPV6               = 0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Pulse %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 PulseProfile.PulseShape         = 'Calculated'; 
-PulseProfile.toLoad             = 'dico_Test_07_01_2020.mat';
+PulseProfile.toLoad             = 'PP_exp_05_03_2020.mat';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Properties %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %-------------- If New Properties --------------%
@@ -23,7 +23,7 @@ Properties.B1rel                = [0.9 1 1.1];
 Properties.vlist                = 0; % [-150 -100 -60 -40 -20 -10 -5 0 5 10 20 40 60 100 150]; % mm/s
 Properties.toSave               = 'prop_ad500Calculated_v10_ph0';
 %-------------- If Load Properties --------------%
-Properties.toLoad               = 'struct_properties_AD_Test';
+Properties.toLoad               = 'prop_ad500Calculated_v10_ph0_Calculated';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Sequence %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %-------------- If New Sequence --------------%
@@ -42,10 +42,10 @@ Sequence.m0                     = [0, 0, 1];    % No inversion, [0,0,-1] if inve
 Sequence.dispFlag               = 1;            % 1 to plot seq time course
 Sequence.toSave                 = 'seq_ad500Calculated_v10_ph0'; 
 %-------------- If Load Sequence --------------%
-Sequence.toLoad                 = 'sequence_Test_07_01_2020_Calculated.mat';
+Sequence.toLoad                 = 'seq_ad500Calculated_v10_ph0_Calculated';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Dico %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Dico.saveName                   = 'dico_ad500Calculated_v10_ph0';
+Dico.saveName                   = 'dico_ad500Calculated_v10_ph0_V2';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% VarAff %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 VariablesAff.T1aff              = 1500;      
