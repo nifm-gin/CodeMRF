@@ -89,9 +89,12 @@ if toDo.computeDico
             % structures to parfor
             T1list = Properties.T1list;
             T2list = Properties.T2list;
+            B1list = Properties.B1rellist;
             nP = Sequence.nPulses;
             FA = Sequence.FA;
             TR = Sequence.TR;
+            TE = Sequence.TE;
+            spoilTag = Sequence.v9_v10;
             
             dictionary = zeros(numel(T1list), nP);
             if isempty(gcp)
@@ -102,7 +105,7 @@ if toDo.computeDico
             t = tic;
             parfor i = 1:numel(T1list)
             %     fprintf('        %i\n',i)
-                [dictionary(i,:), ~] = SPGR_Plain_NoDIff_EPGTest_Modif(nP, T1list(i)*1e-3, T2list(i)*1e-3, [], FA, TR*1e-3);
+                [dictionary(i,:), ~] = EPG(nP, T1list(i)*1e-3, T2list(i)*1e-3, [], FA.*B1list(i), TR*1e-3, TE*1e-3, spoilTag);
             end
             fprintf('  Computation completed in %i s\n', round(toc(t)))
             

@@ -6,31 +6,24 @@ function [] = sequence2txt_mrfv3(Dir, name, Sequence)
 
 %% Creation of the text file
 fid = fopen(strcat(Dir, name,'.txt'),'w');
+if fid > 0
+    % Writing the sequence
+    fprintf(fid,'%d\n',Sequence.nPulses);
 
+    if Sequence.m0(3)==1
+        fprintf(fid,'%d\n',0);
+    elseif Sequence.m0(3)==-1
+        fprintf(fid,'%d\n',1);
+    end
 
-% Writing the sequence
-fprintf(fid,'%d\n',Sequence.nPulses);
+    fprintf(fid,'%d\n',Sequence.Ncycles);
 
-if Sequence.m0(3)==1
-    fprintf(fid,'%d\n',0);
-elseif Sequence.m0(3)==-1
-    fprintf(fid,'%d\n',1);
-end
+    for k=1:Sequence.nPulses
+        fprintf(fid,'%+f %f %f\n',(Sequence.FA(k))*180/pi,Sequence.TR(k),Sequence.TE(k)); 
+        % Car FA en rad dans cette simu et a priori alternance +/- mais pas �crit dans le vecteur FA
+    end
 
-fprintf(fid,'%d\n',Sequence.Ncycles);
-
-% if length(Sequence.TE)==1
-%     Sequence.TE=Sequence.TE*ones(nPulses,1);
-% end
-
-for k=1:Sequence.nPulses
-    fprintf(fid,'%+f %f %f\n',(Sequence.FA(k))*180/pi,Sequence.TR(k),Sequence.TE(k)); % Car FA en rad dans cette simu et a priori alternance +/- mais pas �crit dans le vecteur FA
-    
-    
-end
-
-
-fclose(fid);
-
-clear dossier fid k ans
+    fclose(fid);
+else
+    error('Could not open file %s to save PV6 txt sequence', strcat(Dir, name,'.txt'))
 end
