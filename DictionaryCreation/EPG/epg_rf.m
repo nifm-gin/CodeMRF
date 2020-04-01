@@ -26,9 +26,9 @@ if (nargin < 3) warning('Rotation axis not specified - assuming -My');
 end;
 
 
-RR = [(cos(alpha/2))^2 exp(2*i*phi)*(sin(alpha/2))^2 -i*exp(i*phi)*sin(alpha);
-      exp(-2*i*phi)*(sin(alpha/2))^2 (cos(alpha/2))^2 i*exp(-i*phi)*sin(alpha);
-      -i/2*exp(-i*phi)*sin(alpha) i/2*exp(i*phi)*sin(alpha)      cos(alpha)];
+RR = [(cos(alpha/2))^2,                   exp(2*i*phi)*(sin(alpha/2))^2,   -i*exp(i*phi)*sin(alpha);
+      exp(-2*i*phi)*(sin(alpha/2))^2,     (cos(alpha/2))^2,                i*exp(-i*phi)*sin(alpha);
+      -i/2*exp(-i*phi)*sin(alpha),        i/2*exp(i*phi)*sin(alpha),       cos(alpha)];
 
 
 FpFmZ = RR * FpFmZ;
