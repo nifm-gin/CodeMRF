@@ -1,9 +1,30 @@
-function [Images, Reconstruction, dictionary, Properties] = MRFv3_Reconstruction(acqPath, pathToDico)
-% clear all
-% Properties.vlist=0;
+function [Images, Reconstruction, dictionary, Properties] = MRFv3_Reconstruction(acqPath, pathToDico, flagCallGUI)
+% Performs MRF reconstruction of data from acqPath with dictionary from
+% pathToDico, optionnaly calls dataVsMatch GUI
+% -------------------------------------------------------------------------
+% - acqPath: Path to scan ex: "/home/data/yyyymmdd_scan_/1", this directory
+% should contain the method file and pdata/ dir
+% - pathToDico: path to directory containing result from dictionary
+% generation, should contain dico_*.mat and prop_*.mat files
+% - flagCallGUI: optional flag to launch dataVsMatch GUI at the end of
+% process, default 1
+%
+% - Images: struct containing Image (loaded) data
+% - Reconstruction: struct containing data from Reco such as score map and
+% index map
+% - dictionary: full dictionary used for MRF reconstruction
+% - Properties: struct loaded from prop_*.mat file
+% -------------------------------------------------------------------------
+%%
 fprintf('')
 fprintf('================================================================\n')
 fprintf('Starting reconstruction tool... \n')
+
+if nargin < 2
+    error('At least two input arguments needed')
+elseif nargin < 3
+    flagCallGUI = 1;
+end
 %% Load images 
 % Images=struct;
 % Images.nImages=500;
@@ -68,8 +89,10 @@ fprintf('Complete\n')
 %% Open reco result in dataVsMatch GUI
 fprintf('----------------------------------------------------------------\n')
 fprintf('Reconstruction complete\n')
-fprintf('Displaying results in GUI\n')
-dataVsMatch(Images, Reconstruction, dictionary, Properties);
+if flagCallGUI
+    fprintf('Displaying results in GUI\n')
+    dataVsMatch(Images, Reconstruction, dictionary, Properties);
+end
 fprintf('================================================================\n')
 
 

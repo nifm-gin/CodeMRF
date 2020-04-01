@@ -15,8 +15,8 @@ end
 
 S = size(sig);
 spaceDimProd = prod(S(1:end-1));
-score      = nan(spaceDimProd, S(end));
-idxMatch    = nan(spaceDimProd, S(end));
+score        = nan(spaceDimProd, S(end));
+idxMatch     = nan(spaceDimProd, S(end));
 
 % reshape sig to be [spaceDimProd, nPulses]
 % dot product with dico
