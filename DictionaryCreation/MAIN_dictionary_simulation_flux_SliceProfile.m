@@ -90,11 +90,19 @@ if toDo.computeDico
             T1list = Properties.T1list;
             T2list = Properties.T2list;
             B1list = Properties.B1rellist;
+            dflist = Properties.dflist;
             nP = Sequence.nPulses;
             FA = Sequence.FA;
             TR = Sequence.TR;
             TE = Sequence.TE;
             spoilTag = Sequence.v9_v10;
+            
+            switch Sequence.m0(3)
+                case 1
+                    invPulse = 0;
+                case -1 
+                    invPulse = 1;
+            end
             
             dictionary = zeros(numel(T1list), nP);
             if isempty(gcp)
@@ -103,11 +111,14 @@ if toDo.computeDico
             end
 
             t = tic;
+            parfor_progress(numel(T1list));
             parfor i = 1:numel(T1list)
-            %     fprintf('        %i\n',i)
-                [dictionary(i,:), ~] = EPG(nP, T1list(i)*1e-3, T2list(i)*1e-3, [], FA.*B1list(i), TR*1e-3, TE*1e-3, spoilTag);
+                [dictionary(i,:), ~] = EPG(nP, T1list(i)*1e-3, T2list(i)*1e-3, dflist(i), FA.*B1list(i), TR*1e-3, TE*1e-3, spoilTag, invPulse);
+                parfor_progress;
             end
+            fprintf('\n'); fprintf('\n');
             fprintf('  Computation completed in %i s\n', round(toc(t)))
+            parfor_progress(0);
             
             fprintf('  Saving the dictionary... ')
             save([rootDir, 'DictionaryCreation/Results/', Dico.saveName, '/dico_', Dico.saveName], 'dictionary',  '-v7.3')
