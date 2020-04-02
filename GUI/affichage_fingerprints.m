@@ -22,10 +22,10 @@ function varargout = affichage_fingerprints(varargin)
 
 % Edit the above text to modify the response to help affichage_fingerprints
 
-% Last Modified by GUIDE v2.5 12-Mar-2020 10:20:39
+% Last Modified by GUIDE v2.5 02-Apr-2020 14:00:59
 
 % Begin initialization code - DO NOT EDIT
-gui_Singleton = 1;
+gui_Singleton = 0;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
                    'gui_OpeningFcn', @affichage_fingerprints_OpeningFcn, ...
@@ -155,6 +155,7 @@ set(handles.texte_T2value,'String',strcat(num2str(handles.T2(round(get(handles.s
 handles.fingerprint=handles.dictionary(find(handles.T1list(:)==handles.T1(round(get(handles.slider_T1,'Value'))) & handles.T2list(:)==handles.T2(round(get(handles.slider_T2,'Value'))) & handles.dflist(:)==handles.df(round(get(handles.slider_df,'Value'))) & handles.B1list(:)==handles.B1(round(get(handles.slider_B1,'Value')))),:,(round(get(handles.slider_v,'Value'))));
 
 plot(handles.graphe_fingerprint,abs(handles.fingerprint)./norm(abs(handles.fingerprint)));
+set(handles.graphe_fingerprint, 'XLim', [1, handles.nPulses]);
 title(handles.graphe_fingerprint,'Fingerprint (valeur absolue)');
 xlabel(handles.graphe_fingerprint,'timepoint #');
 ylabel(handles.graphe_fingerprint,'Signal (AU)');
@@ -184,6 +185,7 @@ function slider_T2_Callback(hObject, eventdata, handles)
 
 handles.fingerprint=handles.dictionary(find(handles.T1list(:)==handles.T1(round(get(handles.slider_T1,'Value'))) & handles.T2list(:)==handles.T2(round(get(handles.slider_T2,'Value'))) & handles.dflist(:)==handles.df(round(get(handles.slider_df,'Value'))) & handles.B1list(:)==handles.B1(round(get(handles.slider_B1,'Value')))),:,(round(get(handles.slider_v,'Value'))));
 plot(handles.graphe_fingerprint,abs(handles.fingerprint)./norm(abs(handles.fingerprint)));
+set(handles.graphe_fingerprint, 'XLim', [1, handles.nPulses]);
 title(handles.graphe_fingerprint,'Fingerprint (valeur absolue)');
 xlabel(handles.graphe_fingerprint,'timepoint #');
 ylabel(handles.graphe_fingerprint,'Signal (AU)');
@@ -213,6 +215,7 @@ function slider_df_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 handles.fingerprint=handles.dictionary(find(handles.T1list(:)==handles.T1(round(get(handles.slider_T1,'Value'))) & handles.T2list(:)==handles.T2(round(get(handles.slider_T2,'Value'))) & handles.dflist(:)==handles.df(round(get(handles.slider_df,'Value'))) & handles.B1list(:)==handles.B1(round(get(handles.slider_B1,'Value')))),:,(round(get(handles.slider_v,'Value'))));
 plot(handles.graphe_fingerprint,abs(handles.fingerprint)./norm(abs(handles.fingerprint)));
+set(handles.graphe_fingerprint, 'XLim', [1, handles.nPulses]);
 title(handles.graphe_fingerprint,'Fingerprint (valeur absolue)');
 xlabel(handles.graphe_fingerprint,'timepoint #');
 ylabel(handles.graphe_fingerprint,'Signal (AU)');
@@ -307,6 +310,7 @@ function slider_B1_Callback(hObject, eventdata, handles)
 handles.fingerprint=handles.dictionary(find(handles.T1list(:)==handles.T1(round(get(handles.slider_T1,'Value'))) & handles.T2list(:)==handles.T2(round(get(handles.slider_T2,'Value'))) & handles.dflist(:)==handles.df(round(get(handles.slider_df,'Value'))) & handles.B1list(:)==handles.B1(round(get(handles.slider_B1,'Value')))),:,(round(get(handles.slider_v,'Value'))));
 
 plot(handles.graphe_fingerprint,abs(handles.fingerprint)./norm(abs(handles.fingerprint)));
+set(handles.graphe_fingerprint, 'XLim', [1, handles.nPulses]);
 title(handles.graphe_fingerprint,'Fingerprint (valeur absolue)');
 xlabel(handles.graphe_fingerprint,'timepoint #');
 ylabel(handles.graphe_fingerprint,'Signal (AU)');
@@ -365,7 +369,7 @@ handles.TE=Sequence.TE;
 handles.TR=Sequence.TR;
 handles.FA=Sequence.FA;%_deg*pi/180;
 handles.M0=Sequence.m0;
-handles.Ncycles=Sequence.Ncycles;
+% handles.Ncycles=Sequence.Ncycles;
 handles.nPulses=Sequence.nPulses;
 
 % if exist('Properties.B1rellist')
@@ -431,6 +435,8 @@ plot(handles.graphe_FA,handles.FA*180/pi)
 title(handles.graphe_FA,'Flip angles');
 xlabel(handles.graphe_FA,'timepoint #');
 ylabel(handles.graphe_FA,'FA (�)');
+set(handles.graphe_FA, 'XLim', [1, handles.nPulses]);
+
 
 
 cla(handles.graphe_TR)
@@ -441,6 +447,7 @@ title(handles.graphe_TR,'Repetition times (blue) & echo times (red)');
 xlabel(handles.graphe_TR,'timepoint #');
 ylabel(handles.graphe_TR,'TR & TE(ms)');
 ylim(handles.graphe_TR,[0 max(handles.TR)+5])
+set(handles.graphe_TR, 'XLim', [1, handles.nPulses]);
 
 % handles.figFingerprint=handles.graphe_fingerprint');
 handles.fingerprint=handles.dictionary(find(handles.T1list(:)==handles.T1(round(get(handles.slider_T1,'Value'))) & ...
@@ -448,10 +455,11 @@ handles.fingerprint=handles.dictionary(find(handles.T1list(:)==handles.T1(round(
 
 cla(handles.graphe_fingerprint)
 plot(handles.graphe_fingerprint,abs(handles.fingerprint)./norm(abs(handles.fingerprint)));
+set(handles.graphe_fingerprint, 'XLim', [1, handles.nPulses]);
 title(handles.graphe_fingerprint,'Fingerprint (valeur absolue)');
 xlabel(handles.graphe_fingerprint,'timepoint #');
 ylabel(handles.graphe_fingerprint,'Signal (AU)');
-
+set(handles.graphe_fingerprint, 'XLim', [1, handles.nPulses]);
 
 
 % set(hObject,'Enable','off');
@@ -468,6 +476,7 @@ function slider_v_Callback(hObject, eventdata, handles)
 handles.fingerprint=handles.dictionary(find(handles.T1list(:)==handles.T1(round(get(handles.slider_T1,'Value'))) & handles.T2list(:)==handles.T2(round(get(handles.slider_T2,'Value'))) & handles.dflist(:)==handles.df(round(get(handles.slider_df,'Value'))) & handles.B1list(:)==handles.B1(round(get(handles.slider_B1,'Value')))),:,(round(get(handles.slider_v,'Value'))));
 
 plot(handles.graphe_fingerprint,abs(handles.fingerprint)./norm(abs(handles.fingerprint)));
+set(handles.graphe_fingerprint, 'XLim', [1, handles.nPulses]);
 title(handles.graphe_fingerprint,'Fingerprint (valeur absolue)');
 xlabel(handles.graphe_fingerprint,'timepoint #');
 ylabel(handles.graphe_fingerprint,'Signal (AU)');
