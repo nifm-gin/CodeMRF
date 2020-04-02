@@ -25,16 +25,27 @@
 %
 %       B.Hargreaves.
 
-function [FpFmZ,EE,BV] = epg_grelax(FpFmZ,T1,T2,T,kg,D,Gon,noadd)
+function [FpFmZ,EE,BV] = epg_grelax(FpFmZ,T1,T2,T,kg,D,Gon,noadd, df)
 
+if (nargin < 9) df = 0; end
 if (nargin < 8) noadd=0; end;	% Default is to add states.
 if (nargin < 7) Gon = 1; end;	% Default is Gon.
 
 if (nargin > 1)			% Skip relaxation if only one argument
   E2 = exp(-T/T2);
   E1 = exp(-T/T1);
+    
+  %% off resonance adition
+  phi = 2*pi*df*T;
+  E2Cos = E2 * cos(phi);
+  E2Sin = E2 * sin(phi);
 
-  EE = diag([E2 E2 E1]);	% Decay of states due to relaxation alone.
+  EE = [E2Cos, -E2Sin, 0 ;
+        E2Sin,  E2Cos, 0 ;
+          0  ,    0  , E1;];
+  
+      
+%   EE = diag([E2 E2 E1]);	% Decay of states due to relaxation alone.
   RR = [1-E1];			% Mz Recovery, affects only Z0 state, as 
 				% recovered magnetization is not dephased.
 

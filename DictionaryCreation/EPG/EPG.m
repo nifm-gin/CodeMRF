@@ -1,4 +1,4 @@
-function [s, sd] = EPG(nPulses, T1test, T2test, dfTest, RFalphatrain, TRtrain, TEtrain, spoilTag)
+function [s, sd] = EPG(nPulses, T1test, T2test, df, RFalphatrain, TRtrain, TEtrain, spoilTag, invPulse)
 
 %% Test MR Fingerprinting with SPGR simulations (EPG):
 % (1) Create trains of parameters (2) Show 1 signal evolution
@@ -31,8 +31,13 @@ end
 % TRtrain=TR*ones(1,N);   %Constant
 
 %% Initialize
-P = zeros(3,nStates);   % State matrix
-P(3,1)=1;   % Equilibrium magnetization.
+P = zeros(3, nStates);   % State matrix
+switch invPulse
+    case 1
+        P(3,1) = -1; % Equilibrium magnetization.
+    otherwise     
+        P(3,1) = 1;   % Equilibrium magnetization.
+end
 
 s = zeros(1,nPulses); % Signal 
 sd = zeros(1,nPulses); % Phase demodulated signal
@@ -42,24 +47,24 @@ switch spoilTag
         for k = 1:nPulses
             P = epg_rf(P,pi/180*RFalphatrain(k),RFphasetrain(k));   %  RF pulse
 
-            P = epg_grelax(P,T1test,T2test,TEtrain(k),0,0,1,1);   %  Relaxation with spoiler
+            P = epg_grelax(P,T1test,T2test,TEtrain(k),0,0,1,1, 0);  %  Relaxation with spoiler -> df unaccounted
 
             s(k) = P(1,1);  % Signal is F0 state.
             sd(k) = s(k)*exp(-1i*RFphasetrain(k));   % Phase-Demodulated signal.
 
-            P = epg_grelax(P,T1test,T2test,TRtrain(k)-TEtrain(k),1,0,0,1);   % relaxation
+            P = epg_grelax(P,T1test,T2test,TRtrain(k)-TEtrain(k),1,0,0,1, df);   % relaxation
         end
         
     case 'v10' % Pulse - Acq - SPOIL
         for k = 1:nPulses
             P = epg_rf(P,pi/180*RFalphatrain(k),RFphasetrain(k));   %  RF pulse
 
-            P = epg_grelax(P,T1test,T2test,TEtrain(k),0,0,0,1);   %  Relaxation with spoiler
+            P = epg_grelax(P,T1test,T2test,TEtrain(k),0,0,0,1, df);   %  Relaxation 
 
             s(k) = P(1,1);  % Signal is F0 state.
             sd(k) = s(k)*exp(-1i*RFphasetrain(k));   % Phase-Demodulated signal.
 
-            P = epg_grelax(P,T1test,T2test,TRtrain(k)-TEtrain(k),1,0,1,1);   % relaxation
+            P = epg_grelax(P,T1test,T2test,TRtrain(k)-TEtrain(k),1,0,1,1, 0); % Relaxation with spoiler -> df unaccounted
         end
         
     otherwise
