@@ -15,7 +15,7 @@
 %               epg_grad, epg_grelax
 %
 %       B.Hargreaves.
-function [FpFmZ] = epg_grad(FpFmZ,noadd)
+function [FpFmZ] = EPG_grad(FpFmZ,noadd)
 
 if (nargin < 2) noadd=0; end;	% Add by default.  
 

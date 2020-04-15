@@ -15,7 +15,7 @@
 %
 %	B.Hargreaves.
 %
-function [FpFmZ,RR] = epg_rf(FpFmZ,alpha,phi)
+function [FpFmZ,RR] = EPG_rf(FpFmZ,alpha,phi)
 
 % -- From Weigel at al, JMR 205(2010)276-285, Eq. 8.
 

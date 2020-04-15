@@ -57,14 +57,14 @@ switch spoilTag
 end
 
 for k = 1:nPulses
-    P = epg_rf(P,RFalphatrain(k),RFphasetrain(k));   %  RF pulse
+    P = EPG_rf(P,RFalphatrain(k),RFphasetrain(k));   %  RF pulse
 
-    P = epg_grelax(P,T1test,T2test,TEtrain(k),0,0,spoilBeforeAcq,1, df * ~spoilBeforeAcq);  %  Relaxation with spoiler -> df unaccounted
+    P = EPG_grelax(P,T1test,T2test,TEtrain(k),0,0,spoilBeforeAcq,1, df * ~spoilBeforeAcq);  %  Relaxation with spoiler -> df unaccounted
 
     s(k) = P(1,1);  % Signal is F0 state.
     sd(k) = s(k)*exp(-1i*RFphasetrain(k));   % Phase-Demodulated signal.
 
-    P = epg_grelax(P,T1test,T2test,TRtrain(k)-TEtrain(k),1,0,spoilAfterAcq,1, df * ~spoilAfterAcq);   % relaxation
+    P = EPG_grelax(P,T1test,T2test,TRtrain(k)-TEtrain(k),1,0,spoilAfterAcq,1, df * ~spoilAfterAcq);   % relaxation
 end
         
 %     case 'v10' % Pulse - Acq - SPOIL

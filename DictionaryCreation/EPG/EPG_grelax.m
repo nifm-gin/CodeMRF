@@ -25,7 +25,7 @@
 %
 %       B.Hargreaves.
 
-function [FpFmZ,EE,BV] = epg_grelax(FpFmZ,T1,T2,T,kg,D,Gon,noadd, df)
+function [FpFmZ,EE,BV] = EPG_grelax(FpFmZ,T1,T2,T,kg,D,Gon,noadd, df)
 
 if (nargin < 9) df = 0; end
 if (nargin < 8) noadd=0; end;	% Default is to add states.
@@ -82,9 +82,9 @@ end;
 
 if (Gon==1)
   if (kg >= 0)
-    FpFmZ = epg_grad(FpFmZ,noadd);	% Advance states.
+    FpFmZ = EPG_grad(FpFmZ,noadd);	% Advance states.
   else 
-    FpFmZ = epg_mgrad(FpFmZ,noadd);	% Advance states by negative gradient.
+    FpFmZ = EPG_mgrad(FpFmZ,noadd);	% Advance states by negative gradient.
   end;
 end;
 
