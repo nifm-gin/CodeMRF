@@ -290,16 +290,20 @@ switch choice
     case 'T1'
         clickableImage(localHandle, handles.Properties.T1list(handles.Reconstruction.idxMatch));
         caxis(localHandle, [min(handles.Properties.T1list(handles.Reconstruction.idxMatch), [], 'All'), max(handles.Properties.T1list(handles.Reconstruction.idxMatch), [], 'All')])
-        colorbar(localHandle)
+        c=colorbar(localHandle);
+        set(get(c,'title'),'string','ms');
+       
     case 'T2'
         clickableImage(localHandle, handles.Properties.T2list(handles.Reconstruction.idxMatch));
         caxis(localHandle, [min(handles.Properties.T2list(handles.Reconstruction.idxMatch), [], 'All'), max(handles.Properties.T2list(handles.Reconstruction.idxMatch), [], 'All')])
-        colorbar(localHandle)
+        c=colorbar(localHandle);
+        set(get(c,'title'),'string','ms');
     case 'df'
         clickableImage(localHandle, abs(handles.Properties.dflist(handles.Reconstruction.idxMatch)));
         if numel(handles.Properties.df)>1
-            caxis(localHandle, [min(abs(handles.Properties.dflist(handles.Reconstruction.idxMatch)), [], 'All'), max(abs(handles.Properties.dflist(handles.Reconstruction.idxMatch)), [], 'All')])
-            colorbar(localHandle)
+            caxis(localHandle, [min(handles.Properties.dflist(handles.Reconstruction.idxMatch), [], 'All'), max(handles.Properties.dflist(handles.Reconstruction.idxMatch), [], 'All')])
+            c=colorbar(localHandle);
+            set(get(c,'title'),'string','Hz');
         end
     case 'B1'        
         clickableImage(localHandle, handles.Properties.B1rellist(handles.Reconstruction.idxMatch));
@@ -400,7 +404,7 @@ set(handles.signals, 'nextPlot','replacechildren');
 cla(handles.signals);
 axes(handles.signals)
 plot(X, rawData, 'b', X, match, 'r')
-legend(handles.signals, 'Acquired', 'Match')
+legend(handles.signals, 'Acquired', 'Simulated')
 handles.signalsDrawn = 1;
 guidata(hObject, handles)
 

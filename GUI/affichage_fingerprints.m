@@ -433,8 +433,8 @@ set(handles.texte_vvalue,'String',strcat(num2str(handles.v(round(get(handles.sli
 cla(handles.graphe_FA)
 plot(handles.graphe_FA,handles.FA*180/pi)
 title(handles.graphe_FA,'Flip angles');
-xlabel(handles.graphe_FA,'timepoint #');
-ylabel(handles.graphe_FA,'FA (�)');
+xlabel(handles.graphe_FA,'Pulse #');
+ylabel(handles.graphe_FA,'FA (°)');
 set(handles.graphe_FA, 'XLim', [1, handles.nPulses]);
 
 
@@ -444,8 +444,8 @@ plot(handles.graphe_TR,handles.TR)
 hold(handles.graphe_TR,'on')
 plot(handles.graphe_TR,handles.TE)
 title(handles.graphe_TR,'Repetition times (blue) & echo times (red)');
-xlabel(handles.graphe_TR,'timepoint #');
-ylabel(handles.graphe_TR,'TR & TE(ms)');
+xlabel(handles.graphe_TR,'Pulse #');
+ylabel(handles.graphe_TR,'TR & TE (ms)');
 ylim(handles.graphe_TR,[0 max(handles.TR)+5])
 set(handles.graphe_TR, 'XLim', [1, handles.nPulses]);
 
@@ -456,8 +456,8 @@ handles.fingerprint=handles.dictionary(find(handles.T1list(:)==handles.T1(round(
 cla(handles.graphe_fingerprint)
 plot(handles.graphe_fingerprint,abs(handles.fingerprint)./norm(abs(handles.fingerprint)));
 set(handles.graphe_fingerprint, 'XLim', [1, handles.nPulses]);
-title(handles.graphe_fingerprint,'Fingerprint (valeur absolue)');
-xlabel(handles.graphe_fingerprint,'timepoint #');
+title(handles.graphe_fingerprint,'Fingerprint');
+xlabel(handles.graphe_fingerprint,'Pulse #');
 ylabel(handles.graphe_fingerprint,'Signal (AU)');
 set(handles.graphe_fingerprint, 'XLim', [1, handles.nPulses]);
 
