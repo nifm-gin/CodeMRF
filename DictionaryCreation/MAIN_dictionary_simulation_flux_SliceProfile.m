@@ -1,4 +1,4 @@
-function [Properties, Sequence, varargout] = MAIN_dictionary_simulation_flux_SliceProfile(toRead)
+function [dictionary, Properties, Sequence, varargout] = MAIN_dictionary_simulation_flux_SliceProfile(toRead)
 
 fprintf('Starting simulation tool... \n')
 
@@ -120,8 +120,11 @@ if toDo.computeDico
             fprintf('  Computation completed in %i s\n', round(toc(t)))
             parfor_progress(0);
             
-            fprintf('  Saving the dictionary... ')
-            save([rootDir, 'DictionaryCreation/Results/', Dico.saveName, '/dico_', Dico.saveName], 'dictionary',  '-v7.3')
+            % Saving the dictionary if asked to
+            if toDo.saveDico
+                fprintf('  Saving the dictionary... ')
+                save([rootDir, 'DictionaryCreation/Results/', Dico.saveName, '/dico_', Dico.saveName], 'dictionary',  '-v7.3')
+            end
             fprintf('Done \n')
             
         otherwise
@@ -147,8 +150,11 @@ if toDo.computeDico
                     dictionary = calculdico_1v_gradmom1_mrfv3(Parameters, Properties, PulseProfile, Sequence);
                 end
                 fprintf('Done \n')
-                fprintf('  Saving the dictionary... ')
-                save([rootDir, 'DictionaryCreation/Results/', Dico.saveName, '/dico_', Dico.saveName], 'dictionary',  '-v7.3')
+                % Saving the dictionary if asked to
+                if toDo.saveDico
+                    fprintf('  Saving the dictionary... ')
+                    save([rootDir, 'DictionaryCreation/Results/', Dico.saveName, '/dico_', Dico.saveName], 'dictionary',  '-v7.3')
+                end
                 fprintf('Done \n')
                 clear indicev indicevinv
             else
@@ -173,11 +179,12 @@ if toDo.computeDico
                 end
                 Properties.vlist=vlist_svg;
                 fprintf('Done \n')
-                fprintf('  Saving the dictionary... ')
-                save([rootDir, 'DictionaryCreation/Results/', Dico.saveName, '/dico_', Dico.saveName], 'dico_flux','-v7.3')
+                % Saving the dictionary if asked to
+                if toDo.saveDico
+                    fprintf('  Saving the dictionary... ')
+                    save([rootDir, 'DictionaryCreation/Results/', Dico.saveName, '/dico_', Dico.saveName], 'dico_flux','-v7.3')                    
+                end
                 fprintf('Done \n')
-                
-                clear vlist_svg kv indicev Rot_svg
             end
     end
 end

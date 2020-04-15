@@ -9,6 +9,7 @@ toDo.testRobustness             = 1;
 toDo.savePropStruct             = 1;
 toDo.saveSeqStruct              = 1;
 toDo.exportSeqPV6               = 1;
+toDo.saveDico                   = 1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Pulse %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 PulseProfile.PulseShape         = 'Calculated'; 
