@@ -44,32 +44,46 @@ sd = zeros(1,nPulses); % Phase demodulated signal
 
 switch spoilTag
     case 'v9' % Pulse - SPOILER - Acq
-        for k = 1:nPulses
-            P = epg_rf(P,pi/180*RFalphatrain(k),RFphasetrain(k));   %  RF pulse
-
-            P = epg_grelax(P,T1test,T2test,TEtrain(k),0,0,1,1, 0);  %  Relaxation with spoiler -> df unaccounted
-
-            s(k) = P(1,1);  % Signal is F0 state.
-            sd(k) = s(k)*exp(-1i*RFphasetrain(k));   % Phase-Demodulated signal.
-
-            P = epg_grelax(P,T1test,T2test,TRtrain(k)-TEtrain(k),1,0,0,1, df);   % relaxation
-        end
-        
-    case 'v10' % Pulse - Acq - SPOIL
-        for k = 1:nPulses
-            P = epg_rf(P,pi/180*RFalphatrain(k),RFphasetrain(k));   %  RF pulse
-
-            P = epg_grelax(P,T1test,T2test,TEtrain(k),0,0,0,1, df);   %  Relaxation 
-
-            s(k) = P(1,1);  % Signal is F0 state.
-            sd(k) = s(k)*exp(-1i*RFphasetrain(k));   % Phase-Demodulated signal.
-
-            P = epg_grelax(P,T1test,T2test,TRtrain(k)-TEtrain(k),1,0,1,1, 0); % Relaxation with spoiler -> df unaccounted
-        end
-        
+        spoilBeforeAcq = 1;
+        spoilAfterAcq = 0;
+     case 'v10' % Pulse - Acq - SPOIL
+        spoilBeforeAcq = 0;
+        spoilAfterAcq = 1;
+    case 'noSpoil'
+        spoilBeforeAcq = 0;
+        spoilAfterAcq = 0;
     otherwise
         error('Ambiguous spoiler position, please specify v9 or v10 in Seq.v9_v10 structure')      
 end
+
+for k = 1:nPulses
+    P = epg_rf(P,RFalphatrain(k),RFphasetrain(k));   %  RF pulse
+
+    P = epg_grelax(P,T1test,T2test,TEtrain(k),0,0,spoilBeforeAcq,1, df * ~spoilBeforeAcq);  %  Relaxation with spoiler -> df unaccounted
+
+    s(k) = P(1,1);  % Signal is F0 state.
+    sd(k) = s(k)*exp(-1i*RFphasetrain(k));   % Phase-Demodulated signal.
+
+    P = epg_grelax(P,T1test,T2test,TRtrain(k)-TEtrain(k),1,0,spoilAfterAcq,1, df * ~spoilAfterAcq);   % relaxation
+end
+        
+%     case 'v10' % Pulse - Acq - SPOIL
+%         spoilBeforeTE = 0;
+%         spoilAfterTE = 1;
+%         for k = 1:nPulses
+%             P = epg_rf(P,pi/180*RFalphatrain(k),RFphasetrain(k));   %  RF pulse
+% 
+%             P = epg_grelax(P,T1test,T2test,TEtrain(k),0,0,0,1, df);   %  Relaxation 
+% 
+%             s(k) = P(1,1);  % Signal is F0 state.
+%             sd(k) = s(k)*exp(-1i*RFphasetrain(k));   % Phase-Demodulated signal.
+% 
+%             P = epg_grelax(P,T1test,T2test,TRtrain(k)-TEtrain(k),1,0,1,1, 0); % Relaxation with spoiler -> df unaccounted
+%         end
+        
+%     otherwise
+%         error('Ambiguous spoiler position, please specify v9 or v10 in Seq.v9_v10 structure')      
+% end
 %% Visu
 % figure();
 % magphase(sd);
