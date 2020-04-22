@@ -64,15 +64,13 @@ switch numel(varargin)
     case 1
         handles.Images = varargin{1}.Images;
         handles.Reconstruction = varargin{1}.Reconstruction;
-        handles.dictionary = varargin{1}.dictionary;
         handles.Properties = varargin{1}.Properties;
-    case 4
+    case 3
         handles.Images = varargin{1};
         handles.Reconstruction = varargin{2};
-        handles.dictionary = varargin{3};
-        handles.Properties = varargin{4};
+        handles.Properties = varargin{3};
     otherwise
-        error('Inputs must be Images, Reconstruction, dictionary, Properties structures, on a struct containing them')
+        error('Inputs must be Images, Reconstruction, Properties structures, on a struct containing them')
 end
 
 % Choose default command line output for dataVsMatch
@@ -288,27 +286,27 @@ switch choice
         caxis(localHandle, [min(handles.Reconstruction.PDmap, [], 'All'), max(handles.Reconstruction.PDmap, [], 'All')])
         colorbar(localHandle)
     case 'T1'
-        clickableImage(localHandle, handles.Properties.T1list(handles.Reconstruction.idxMatch));
-        caxis(localHandle, [min(handles.Properties.T1list(handles.Reconstruction.idxMatch), [], 'All'), max(handles.Properties.T1list(handles.Reconstruction.idxMatch), [], 'All')])
+        clickableImage(localHandle, handles.Reconstruction.T1Map);
+        caxis(localHandle, [min(handles.Reconstruction.T1Map, [], 'All'), max(handles.Reconstruction.T1Map, [], 'All')])
         c=colorbar(localHandle);
         set(get(c,'title'),'string','ms');
        
     case 'T2'
-        clickableImage(localHandle, handles.Properties.T2list(handles.Reconstruction.idxMatch));
-        caxis(localHandle, [min(handles.Properties.T2list(handles.Reconstruction.idxMatch), [], 'All'), max(handles.Properties.T2list(handles.Reconstruction.idxMatch), [], 'All')])
+        clickableImage(localHandle, handles.Reconstruction.T2Map);
+        caxis(localHandle, [min(handles.Reconstruction.T2Map, [], 'All'), max(handles.Reconstruction.T2Map, [], 'All')])
         c=colorbar(localHandle);
         set(get(c,'title'),'string','ms');
     case 'df'
-        clickableImage(localHandle, abs(handles.Properties.dflist(handles.Reconstruction.idxMatch)));
+        clickableImage(localHandle, handles.Reconstruction.dfMap);
         if numel(handles.Properties.df)>1
-            caxis(localHandle, [min(handles.Properties.dflist(handles.Reconstruction.idxMatch), [], 'All'), max(handles.Properties.dflist(handles.Reconstruction.idxMatch), [], 'All')])
+            caxis(localHandle, [min(handles.Reconstruction.dfMap, [], 'All'), max(handles.Reconstruction.dfMap, [], 'All')])
             c=colorbar(localHandle);
             set(get(c,'title'),'string','Hz');
         end
     case 'B1'        
-        clickableImage(localHandle, handles.Properties.B1rellist(handles.Reconstruction.idxMatch));
+        clickableImage(localHandle, handles.Reconstruction.B1relMap);
         if numel(handles.Properties.B1rel)>1
-            caxis(localHandle, [min(handles.Properties.B1rellist(handles.Reconstruction.idxMatch), [], 'All'), max(handles.Properties.B1rellist(handles.Reconstruction.idxMatch), [], 'All')])
+            caxis(localHandle, [min(handles.Reconstruction.B1relMap, [], 'All'), max(handles.Reconstruction.B1relMap, [], 'All')])
             colorbar(localHandle)
         end
     case 'Match #'
@@ -375,27 +373,28 @@ X = 1:handles.Images.nImages;
 handles.patch = zeros(handles.Images.nX, handles.Images.nY); % Initialize transparent mask for averaging region display
 if handles.avgSlider.Value == 1
     rawData = squeeze(handles.Images.Image_normalized_dicom(handles.x,handles.y, sliceIdx, :));
-    match = abs(handles.dictionary(handles.Reconstruction.idxMatch(handles.x,handles.y),:)) / ...
-        norm(abs(handles.dictionary(handles.Reconstruction.idxMatch(handles.x,handles.y),:)));
+    match = handles.Reconstruction.sigMatch{sliceIdx}(handles.x,handles.y, :);
+%     match = abs(handles.dictionary(handles.Reconstruction.idxMatch(handles.x,handles.y),:)) / ...
+%         norm(abs(handles.dictionary(handles.Reconstruction.idxMatch(handles.x,handles.y),:)));
     handles.patch(handles.x, handles.y) = 1; % Set visibility for current voxel
 else
     avg = handles.avgSlider.Value;
     rawData = zeros(size(squeeze(handles.Images.Image_normalized_dicom(handles.x,handles.y,:))));
-    match = rawData';
+    match = rawData;
     count = 0;
     for i = 0:2*avg-2
         for j=0:2*avg-2
             rawData = rawData + squeeze(handles.Images.Image_normalized_dicom(handles.x-(avg-1)+i,handles.y-(avg-1)+j,:));
-            localMatch = abs(handles.dictionary(handles.Reconstruction.idxMatch(handles.x-(avg-1)+i,handles.y-(avg-1)+j),:));
-            match = match + localMatch./norm(localMatch);
+            localMatch = handles.Reconstruction.sigMatch{sliceIdx}(handles.x-(avg-1)+i, handles.y-(avg-1)+j, :);
+%             localMatch = abs(handles.dictionary(handles.Reconstruction.idxMatch(handles.x-(avg-1)+i,handles.y-(avg-1)+j),:));
+%             match = match + localMatch./norm(localMatch);
+            match = match + squeeze(localMatch);
             handles.patch(handles.x-(avg-1)+i,handles.y-(avg-1)+j)=1; % Set visibility for current voxel
             count = count+1;
         end
     end
     rawData = rawData/count;
-    max(match)
     match = match/count;
-    max(match)
 end
 avgShow_Callback(hObject, eventdata, handles);
 guidata(hObject, handles);
@@ -403,7 +402,7 @@ set(handles.matchIdx, 'String', sprintf('Match #: %i', handles.Reconstruction.id
 set(handles.signals, 'nextPlot','replacechildren');
 cla(handles.signals);
 axes(handles.signals)
-plot(X, rawData, 'b', X, match, 'r')
+plot(X, rawData, 'b', X, squeeze(match), 'r')
 legend(handles.signals, 'Acquired', 'Simulated')
 handles.signalsDrawn = 1;
 guidata(hObject, handles)

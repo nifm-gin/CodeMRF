@@ -53,7 +53,8 @@ fprintf('Done\n')
 fprintf('Normalizing signals and dictionary... ')
 Images = fp_normalization_MRFv3(Images);
 dictionary = abs(dictionary);
-normDictionary = vecnorm(dictionary, 2, 2);
+normDictionary = vecnorm(dictionary, 2, 2); % needed to compute proton density
+dictionary = dictionary./ normDictionary;
 fprintf('Done\n')
 
 %% Load dico
@@ -82,8 +83,10 @@ if length(Properties.vlist)>1
     plot_data_et_match_MRFv3;
 else
     
-    [Reconstruction.innerproduct, Reconstruction.idxMatch]= mrfMatching(dictionary./normDictionary, Images.Image_normalized_dicom);
-    Reconstruction.PDmap = Images.norme_dicom ./ normDictionary(Reconstruction.idxMatch);
+    [Reconstruction.innerproduct, Reconstruction.idxMatch]= mrfMatching(dictionary, Images.Image_normalized_dicom);
+    Reconstruction = extractMaps(Reconstruction, Images, Properties, dictionary, normDictionary);
+    
+    
 end
 fprintf('Complete\n')
 %% Open reco result in dataVsMatch GUI
@@ -91,7 +94,7 @@ fprintf('----------------------------------------------------------------\n')
 fprintf('Reconstruction complete\n')
 if flagCallGUI
     fprintf('Displaying results in GUI\n')
-    dataVsMatch(Images, Reconstruction, dictionary, Properties);
+    dataVsMatch(Images, Reconstruction, Properties);
 end
 fprintf('================================================================\n')
 
