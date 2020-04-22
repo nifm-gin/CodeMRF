@@ -11,11 +11,21 @@ rootDir = tmpRootDir(1:idx(end));
 
 [toDo, PulseProfile, Properties, Sequence, Dico] = readParameters([rootDir, 'DictionaryCreation/dicoSimParameters/', toRead]);
 
-assert(mkdir([rootDir, 'DictionaryCreation/Results/', Dico.saveName]))
-copyfile([rootDir, 'DictionaryCreation/dicoSimParameters/', toRead], [rootDir, 'DictionaryCreation/Results/',Dico.saveName, '/', toRead]);
-% saveName = [Dico.saveName '_]
-
-fprintf('  Parameter file loaded and copied\n')
+if toDo.saveDico
+    if exist([rootDir, 'DictionaryCreation/Results/', Dico.saveName], 'dir')
+        fprintf('!!!!!! WARNING: Saving repertory exists, confirm choice in GUI !!!!!!\n')
+        fig = uifigure;
+        sel = uiconfirm(fig,'Saving repertory exists, overwrite?','Saving path conflict', 'Options',{'Overwrite', 'Abort'}, 'Icon','warning', 'CancelOption', 2);
+        close(fig);
+        if strcmp(sel, 'Abort')
+            error('Simulation aborted by user')
+        end
+    end
+    
+    assert(mkdir([rootDir, 'DictionaryCreation/Results/', Dico.saveName]))
+    copyfile([rootDir, 'DictionaryCreation/dicoSimParameters/', toRead], [rootDir, 'DictionaryCreation/Results/',Dico.saveName, '/', toRead]);
+    fprintf('  Parameter file loaded and copied\n')  
+end
 
 %% PROPERTIES
 fprintf('  Properties ... ')
@@ -105,20 +115,33 @@ if toDo.computeDico
             end
             
             dictionary = zeros(numel(T1list), nP);
-            if isempty(gcp)
-                delete(gcp('nocreate'))
-                parpool;
+            
+            % parfor if nSignals > nWorkers
+            ps = parallel.Settings;
+            if numel(T1list) > ps.SchedulerComponents.NumWorkers
+                if isempty(gcp)
+                    delete(gcp('nocreate'))
+                    parpool;
+                end
+                t = tic;
+                parfor_progress(numel(T1list));
+                parfor i = 1:numel(T1list)
+                    [dictionary(i,:), ~] = EPG(nP, T1list(i)*1e-3, T2list(i)*1e-3, dflist(i), FA.*B1list(i), TR*1e-3, TE*1e-3, spoilTag, invPulse);
+                    parfor_progress;
+                end
+                parfor_progress(0);
+                tF = round(toc(t));
+                fprintf('\n'); fprintf('\n');
+            else 
+                % Serial for otherwise
+                t = tic;
+                for i = 1:numel(T1list)
+                    [dictionary(i,:), ~] = EPG(nP, T1list(i)*1e-3, T2list(i)*1e-3, dflist(i), FA.*B1list(i), TR*1e-3, TE*1e-3, spoilTag, invPulse);
+                end
+                tF = round(toc(t));
             end
-
-            t = tic;
-            parfor_progress(numel(T1list));
-            parfor i = 1:numel(T1list)
-                [dictionary(i,:), ~] = EPG(nP, T1list(i)*1e-3, T2list(i)*1e-3, dflist(i), FA.*B1list(i), TR*1e-3, TE*1e-3, spoilTag, invPulse);
-                parfor_progress;
-            end
-            fprintf('\n'); fprintf('\n');
-            fprintf('  Computation completed in %i s\n', round(toc(t)))
-            parfor_progress(0);
+            fprintf('  Computation completed in %i s\n', tF)
+            
             
             % Saving the dictionary if asked to
             if toDo.saveDico
