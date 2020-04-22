@@ -22,7 +22,7 @@ function varargout = dataVsMatch(varargin)
 
 % Edit the above text to modify the response to help dataVsMatch
 
-% Last Modified by GUIDE v2.5 19-Mar-2020 15:10:56
+% Last Modified by GUIDE v2.5 22-Apr-2020 14:43:38
 switch numel(varargin)
     case 1
         assert(isstruct(varargin{1}), 'Single argument must be a struct containing Images, Reconstruction, dictionary, Properties structures')
@@ -59,7 +59,6 @@ switch numel(varargin)
     case 0
         handles.Images = struct;
         handles.Reconstruction = struct;
-        handles.dictionary = struct;
         handles.Properties = struct;
     case 1
         handles.Images = varargin{1}.Images;
@@ -119,6 +118,10 @@ cla(handles.signals)
 cla(handles.image1)
 cla(handles.image2)
 cla(handles.image3)
+handles.valTable.Data{2,2}='ms';
+handles.valTable.Data{3,2}='ms';
+handles.valTable.Data{4,2}='Hz';
+handles.valTable.Data{6,2}='mm/s';
 % set(handles.rawDataPlot, 'PickableParts', 'all'); 
 % Set raw plot
 clickableImage(handles.rawDataPlot, squeeze(handles.Images.Images_dicom(:,:,round(handles.Images.nImages/2))))
@@ -405,6 +408,15 @@ axes(handles.signals)
 plot(X, rawData, 'b', X, squeeze(match), 'r')
 legend(handles.signals, 'Acquired', 'Simulated')
 handles.signalsDrawn = 1;
+
+handles.valTable.Data{1,1} = num2str(handles.Reconstruction.innerproduct(handles.x, handles.y));
+handles.valTable.Data{2,1} = num2str(handles.Reconstruction.T1Map(handles.x, handles.y));
+handles.valTable.Data{3,1} = num2str(handles.Reconstruction.T2Map(handles.x, handles.y));
+handles.valTable.Data{4,1} = num2str(handles.Reconstruction.dfMap(handles.x, handles.y));
+handles.valTable.Data{5,1} = num2str(handles.Reconstruction.B1relMap(handles.x, handles.y));
+handles.valTable.Data{6,1} = num2str(handles.Reconstruction.vMap(handles.x, handles.y));
+handles.valTable.Data{7,1} = num2str(handles.Reconstruction.PDmap(handles.x, handles.y));
+
 guidata(hObject, handles)
 
 
@@ -456,3 +468,15 @@ switch handles.avgShow.Value
 end
 
 % Hint: get(hObject,'Value') returns toggle state of avgShow
+
+
+% --- Executes when entered data in editable cell(s) in valTable.
+function valTable_CellEditCallback(hObject, eventdata, handles)
+% hObject    handle to valTable (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.TABLE)
+%	Indices: row and column indices of the cell(s) edited
+%	PreviousData: previous data for the cell(s) edited
+%	EditData: string(s) entered by the user
+%	NewData: EditData or its converted form set on the Data property. Empty if Data was not changed
+%	Error: error string when failed to convert EditData to appropriate value for Data
+% handles    structure with handles and user data (see GUIDATA)
