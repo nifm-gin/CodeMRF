@@ -1,8 +1,6 @@
-function [dictionary, Properties, Sequence, varargout] = MAIN_dictionary_simulation_flux_SliceProfile(toRead)
+function [dictionary, Properties, Sequence, varargout] = dictionarySimulation(toRead)
 
 fprintf('Starting simulation tool... \n')
-
-% toRead = 'testGenSeqProp.txt';
 
 %% INIT
 tmpRootDir  = fileparts(mfilename('fullpath'));
@@ -39,7 +37,7 @@ else
 end
 
 if toDo.savePropStruct
-        %         save([rootDir, 'SequencesAndProperties/', Properties.toSave, '_', PulseProfile.PulseShape, '.mat'], 'Properties')
+        %         save([rootDir, 'must have nPulses elementsSequencesAndProperties/', Properties.toSave, '_', PulseProfile.PulseShape, '.mat'], 'Properties')
         save([rootDir, 'DictionaryCreation/Results/', Dico.saveName, '/prop_', Dico.saveName, '.mat'], 'Properties')
         fprintf('  Properties structure saved \n')
 end
@@ -81,9 +79,9 @@ end
 
 %% Preparation du dictionnaire
 if toDo.prepDico
-    if strcmp(Sequence.v9_v10,'v9')
+    if strcmp(Sequence.spoilType, 'Echo')
         Parameters = prepdico_v9_gradmom1_mrfv3(Sequence, PulseProfile);
-    elseif strcmp(Sequence.v9_v10,'v10')
+    elseif strcmp(Sequence.spoilType, 'FID')
         Parameters = prepdico_v10_gradmom1_mrfv3(Sequence, PulseProfile);
     end
 end
@@ -93,55 +91,23 @@ end
 if toDo.computeDico
     switch Dico.method
         case 'EPG'
-            fprintf('  EPG computation ... \n')
+            fprintf('  EPG computation... \n')      
+            % Call epg overlay function
+            [dictionary, tF] = EpgOverlay(Properties, Sequence);            
+            fprintf('  Computation completed in %i s\n', tF)            
             
-            % Putting lists in separate variables to avoid passing full
-            % structures to parfor
-            T1list = Properties.T1list;
-            T2list = Properties.T2list;
-            B1list = Properties.B1rellist;
-            dflist = Properties.dflist;
-            nP = Sequence.nPulses;
-            FA = Sequence.FA;
-            TR = Sequence.TR;
-            TE = Sequence.TE;
-            spoilTag = Sequence.v9_v10;
-            
-            switch Sequence.m0(3)
-                case 1
-                    invPulse = 0;
-                case -1 
-                    invPulse = 1;
+            % Saving the dictionary if asked to
+            if toDo.saveDico
+                fprintf('  Saving the dictionary... ')
+                save([rootDir, 'DictionaryCreation/Results/', Dico.saveName, '/dico_', Dico.saveName], 'dictionary',  '-v7.3')
             end
+            fprintf('Done \n')
             
-            dictionary = zeros(numel(T1list), nP);
-            
-            % parfor if nSignals > nWorkers
-            ps = parallel.Settings;
-            if numel(T1list) > ps.SchedulerComponents.NumWorkers
-                if isempty(gcp)
-                    delete(gcp('nocreate'))
-                    parpool;
-                end
-                t = tic;
-                parfor_progress(numel(T1list));
-                parfor i = 1:numel(T1list)
-                    [dictionary(i,:), ~] = EPG(nP, T1list(i)*1e-3, T2list(i)*1e-3, dflist(i), FA.*B1list(i), TR*1e-3, TE*1e-3, spoilTag, invPulse);
-                    parfor_progress;
-                end
-                parfor_progress(0);
-                tF = round(toc(t));
-                fprintf('\n'); fprintf('\n');
-            else 
-                % Serial for otherwise
-                t = tic;
-                for i = 1:numel(T1list)
-                    [dictionary(i,:), ~] = EPG(nP, T1list(i)*1e-3, T2list(i)*1e-3, dflist(i), FA.*B1list(i), TR*1e-3, TE*1e-3, spoilTag, invPulse);
-                end
-                tF = round(toc(t));
-            end
-            fprintf('  Computation completed in %i s\n', tF)
-            
+        case 'Bloch'
+            fprintf('  Bloch computation... \n')      
+            % Call epg overlay function
+            [dictionary, tF] = BlochOverlay(Properties, Sequence);            
+            fprintf('  Computation completed in %i s\n', tF)            
             
             % Saving the dictionary if asked to
             if toDo.saveDico
