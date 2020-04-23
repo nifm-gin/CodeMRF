@@ -22,7 +22,7 @@ function varargout = dataVsMatch(varargin)
 
 % Edit the above text to modify the response to help dataVsMatch
 
-% Last Modified by GUIDE v2.5 22-Apr-2020 14:43:38
+% Last Modified by GUIDE v2.5 22-Apr-2020 15:51:18
 switch numel(varargin)
     case 1
         assert(isstruct(varargin{1}), 'Single argument must be a struct containing Images, Reconstruction, dictionary, Properties structures')
@@ -98,12 +98,6 @@ function startButton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Get data from local env
-% handles.Images = evalin('base', 'Images');
-% handles.dictionary = evalin('base', 'dictionary');
-% handles.Reconstruction = evalin('base', 'Reconstruction');
-% handles.Properties = evalin('base', 'Properties');
-
 % reset handles
 handles.signalsDrawn = 0;
 handles.x = 0; 
@@ -148,10 +142,6 @@ choice = cellstr(get(hObject,'String'));
 choice = choice{get(hObject,'Value')};
 changePlot(localHandle, choice, handles);
 
-% Hints: contents = cellstr(get(hObject,'String')) returns dataSelector1 contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from dataSelector1
-
-
 % --- Executes during object creation, after setting all properties.
 function dataSelector1_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to dataSelector1 (see GCBO)
@@ -164,15 +154,12 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
 % --- Executes on selection change in dataSelector2.
 function dataSelector2_Callback(hObject, eventdata, handles)
 % hObject    handle to dataSelector2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns dataSelector2 contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from dataSelector2
 localHandle = handles.image2;
 choice = cellstr(get(hObject,'String'));
 choice = choice{get(hObject,'Value')};
@@ -184,8 +171,6 @@ function dataSelector2_CreateFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
@@ -197,8 +182,6 @@ function dataSelector3_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns dataSelector3 contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from dataSelector3
 localHandle = handles.image3;
 choice = cellstr(get(hObject,'String'));
 choice = choice{get(hObject,'Value')};
@@ -210,8 +193,6 @@ function dataSelector3_CreateFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
@@ -222,9 +203,6 @@ function sliceSelector_Callback(hObject, eventdata, handles)
 % hObject    handle to sliceSelector (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = cellstr(get(hObject,'String')) returns sliceSelector contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from sliceSelector
 
 % --- Executes during object creation, after setting all properties.
 function sliceSelector_CreateFcn(hObject, eventdata, handles)
@@ -248,16 +226,12 @@ function rawDataPlot_CreateFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
-% Hint: place code in OpeningFcn to populate rawDataPlot
-
 % --- Executes during object creation, after setting all properties.
 function image1_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to image1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 set(gca,'xtick',[]); set(gca,'ytick',[]);
-% Hint: place code in OpeningFcn to populate image1
-
 
 % --- Executes during object creation, after setting all properties.
 function image2_CreateFcn(hObject, eventdata, handles)
@@ -265,8 +239,6 @@ function image2_CreateFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 set(gca,'xtick',[]); set(gca,'ytick',[]);
-% Hint: place code in OpeningFcn to populate image2
-
 
 % --- Executes during object creation, after setting all properties.
 function image3_CreateFcn(hObject, eventdata, handles)
@@ -274,8 +246,6 @@ function image3_CreateFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 set(gca,'xtick',[]); set(gca,'ytick',[]);
-% Hint: place code in OpeningFcn to populate image3
-
 
 function changePlot(localHandle, choice, handles)
 % executes chen changing selection below plots
@@ -377,20 +347,17 @@ handles.patch = zeros(handles.Images.nX, handles.Images.nY); % Initialize transp
 if handles.avgSlider.Value == 1
     rawData = squeeze(handles.Images.Image_normalized_dicom(handles.x,handles.y, sliceIdx, :));
     match = handles.Reconstruction.sigMatch{sliceIdx}(handles.x,handles.y, :);
-%     match = abs(handles.dictionary(handles.Reconstruction.idxMatch(handles.x,handles.y),:)) / ...
-%         norm(abs(handles.dictionary(handles.Reconstruction.idxMatch(handles.x,handles.y),:)));
     handles.patch(handles.x, handles.y) = 1; % Set visibility for current voxel
 else
     avg = handles.avgSlider.Value;
     rawData = zeros(size(squeeze(handles.Images.Image_normalized_dicom(handles.x,handles.y,:))));
     match = rawData;
     count = 0;
+    % compute mean signal in a square around selected voxel
     for i = 0:2*avg-2
         for j=0:2*avg-2
             rawData = rawData + squeeze(handles.Images.Image_normalized_dicom(handles.x-(avg-1)+i,handles.y-(avg-1)+j,:));
             localMatch = handles.Reconstruction.sigMatch{sliceIdx}(handles.x-(avg-1)+i, handles.y-(avg-1)+j, :);
-%             localMatch = abs(handles.dictionary(handles.Reconstruction.idxMatch(handles.x-(avg-1)+i,handles.y-(avg-1)+j),:));
-%             match = match + localMatch./norm(localMatch);
             match = match + squeeze(localMatch);
             handles.patch(handles.x-(avg-1)+i,handles.y-(avg-1)+j)=1; % Set visibility for current voxel
             count = count+1;
@@ -429,18 +396,12 @@ set(handles.avgDisp, 'String', sprintf('Averaging: %i', round(get(hObject, 'Valu
 if handles.signalsDrawn==1
     drawSignals(hObject, eventdata, handles)
 end
-% Hints: get(hObject,'Value') returns position of slider
-%        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
 
 % --- Executes during object creation, after setting all properties.
 function avgSlider_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to avgSlider (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'Value') returns position of slider
-%        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
-
 
 % --- Executes on button press in avgShow.
 function avgShow_Callback(hObject, eventdata, handles)
@@ -467,9 +428,6 @@ switch handles.avgShow.Value
         end
 end
 
-% Hint: get(hObject,'Value') returns toggle state of avgShow
-
-
 % --- Executes when entered data in editable cell(s) in valTable.
 function valTable_CellEditCallback(hObject, eventdata, handles)
 % hObject    handle to valTable (see GCBO)
@@ -479,4 +437,38 @@ function valTable_CellEditCallback(hObject, eventdata, handles)
 %	EditData: string(s) entered by the user
 %	NewData: EditData or its converted form set on the Data property. Empty if Data was not changed
 %	Error: error string when failed to convert EditData to appropriate value for Data
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in loadButton.
+function loadButton_Callback(hObject, eventdata, handles)
+% hObject    handle to loadButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+[file, path] = uigetfile;
+load(fullfile(path, file), 'Images', 'Reconstruction', 'Properties');
+handles.Images = Images;
+handles.Reconstruction = Reconstruction;
+handles.Properties = Properties;
+clear Images Reconstruction Properties
+guidata(hObject, handles)
+
+% --- Executes on button press in saveButton.
+function saveButton_Callback(hObject, eventdata, handles)
+% hObject    handle to saveButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+Images = handles.Images;
+Reconstruction = handles.Reconstruction;
+Properties = handles.Properties;
+[file, path] = uiputfile;
+save(fullfile(path, file),'Images', 'Reconstruction', 'Properties');
+
+
+
+% --- If Enable == 'on', executes on mouse press in 5 pixel border.
+% --- Otherwise, executes on mouse press in 5 pixel border or over saveButton.
+function saveButton_ButtonDownFcn(hObject, eventdata, handles)
+% hObject    handle to saveButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
