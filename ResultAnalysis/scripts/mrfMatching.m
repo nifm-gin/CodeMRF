@@ -2,7 +2,7 @@ function [score,idxMatch] = mrfMatching(dict,sig)
 % Function for MRF matching by dot-product
 % -------------------------------------------------------------------------
 % - sig: acquired signals, shaped as [X, Y, Z, time], already normalized
-% - dict: dictionary shapes as [nEntries, time], already normalized
+% - dict: dictionary shaped as [nEntries, time], already normalized
 %
 % - score: best dot-product in each space point [X, Y, Z]
 % - idxMatch: index of dico entry corresponding to score, [X, Y, Z]
