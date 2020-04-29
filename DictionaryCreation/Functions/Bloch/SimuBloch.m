@@ -1,16 +1,20 @@
-function SignalEvol=SimuBloch(RFalphatrain ,RFphasetrain ,TRtrain ,TEtrain, T1, T2, df, gradDur, gradAmp, Shim, spoilType, invPulse)
+function SignalEvol=SimuBloch(RFalphatrain ,RFphasetrain ,TRtrain ,TEtrain, T1, T2, df, gradDur, gradAmp, Shim, spoilType, invPulse, fov)
 % Simulate fast GRE sequence with options of gradients and custom RF shapes
-% alpha in rad, TR in sec, T1 and T2 in sec, df in Hz (can be [-200:200]), Tcrush in s, Ampcrush in Gauss
+% alpha in rad, TR in sec, T1 and T2 in sec, df in Hz (can be [-200:200]),
+% Tcrush in s, Ampcrush in T/m, converted to G/cm for C function
 
-% tic
 %	--- Setup parameters ---
 N=numel(RFalphatrain);
 % Trf = 0.00001; % 10 us "hard" RF pulse.
 % Trf = 10 * 1e-6;
 Trf = 1e-3; %as in MRVox
+gradAmp = gradAmp * 1e2; % Conversion from T/m to G/cm
 gamma = 4258; % Hz/G.
-x =-2:.04:2; % isochromats so we can simulate effects of gradients x =-2:.02:2
-% x = 0;
+numPos = 100;
+x = linspace(-fov/2, fov/2, numPos); % positions in m
+x = x * 1e2; % positions in cm for C function
+% x =-2:.04:2; % isochromats so we can simulate effects of gradients x =-2:.02:2
+
 switch spoilType
     case 'Echo'
         sBefore     = 1;
