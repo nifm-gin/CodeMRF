@@ -1,4 +1,4 @@
-function [s, sd] = EPG(nPulses, T1, T2, df, RFalphatrain, TRtrain, TEtrain, spoilType, invPulse)
+function [s, sd] = EPG(nPulses, T1, T2, df, RFalphatrain, RFphasetrain, TRtrain, TEtrain, spoilType, invPulse)
 % EPG computation, using functions written by B. Hargreaves
 % This function simulates a single signal using the parameters given
 % -------------------------------------------------------------------------
@@ -19,15 +19,15 @@ function [s, sd] = EPG(nPulses, T1, T2, df, RFalphatrain, TRtrain, TEtrain, spoi
 nStates = 200;	% Number of states to simulate (easier to keep constant if showing state evolution)
 
 %% RF phase train
-RFphasetrain=0*ones(1,nPulses);
-flipphaseincr = 0;  % Phase increment 0 to start.
-% flipphaseincrincr = 117;    % Phase increment-increment of 117 deg.
-flipphaseincrincr = 0;
-
-for k = 1:nPulses
-    RFphasetrain(k) = RFphasetrain(k) + pi/180*(flipphaseincr); % Incr. phase
-    flipphaseincr = flipphaseincr + flipphaseincrincr;  % Increment increment!
-end
+% RFphasetrain=0*ones(1,nPulses);
+% flipphaseincr = 0;  % Phase increment 0 to start.
+% % flipphaseincrincr = 117;    % Phase increment-increment of 117 deg.
+% flipphaseincrincr = 0;
+% 
+% for k = 1:nPulses
+%     RFphasetrain(k) = RFphasetrain(k) + pi/180*(flipphaseincr); % Incr. phase
+%     flipphaseincr = flipphaseincr + flipphaseincrincr;  % Increment increment!
+% end
 
 
 %% Initialize
