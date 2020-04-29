@@ -14,6 +14,7 @@ function [seqOut] = genSeq(seqIn)
 % lobes, can be 0
 % Sequence.phases controls the phase increment of the FA, 
 % 0: no alternance, 2: pi increments, (4: pi/2 increments NOT IMPLEMENTED YET)
+% Sequence.phaseIncrement is the increment on RF phase, starting at 0
 
 %% Check input
 % check lobeShape size
@@ -34,6 +35,7 @@ if numel(seqIn.FAmax) == 1
 else
     assert(numel(seqIn.FAmax) == seqIn.nLobes, "The number of FAmax provided does not match the number of lobes. Use only one FAmax to set it to all lobes.");
 end
+% check phases
 if ~nnz(find(seqIn.phases == [0, 2, 4]))
     warning("Sequence.phases should be 0, 2 or 4. Treated as 0.")
     seqIn.phases = 0;
@@ -103,27 +105,30 @@ for lobe = 1:seqIn.nLobes
         case 'rand'
             FA(lobeStart+1:lobeStart+nPtsLobe) = seqIn.FAmin(lobe) + (seqIn.FAmax(lobe) - seqIn.FAmin(lobe))*rand(1, nPtsLobe) + seqIn.FAnoise*rand(1, nPtsLobe)-seqIn.FAnoise/2;
     end
-    phaseMult = ones(1,nPtsLobe);
-    switch seqIn.phases
-        case 2
-            phaseMult(2:2:end) = -1;
-        case 4
-            error('Not implemented yet')
-    end
-    FA(lobeStart+1:lobeStart+nPtsLobe) = FA(lobeStart+1:lobeStart+nPtsLobe).*phaseMult;
+    
+%     phaseMult = ones(1,nPtsLobe);
+%     switch seqIn.phases
+%         case 2
+%             phaseMult(2:2:end) = -1;
+%         case 4
+%             error('Not implemented yet')
+%     end
+%     FA(lobeStart+1:lobeStart+nPtsLobe) = FA(lobeStart+1:lobeStart+nPtsLobe).*phaseMult;
 end
-
-%% 
-%    FA=90*perlin_mrfv3(nPulses/20,20); % ---------------------------------- A VIRER APRES
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% FA = round(FA);
 FA=FA(1:seqIn.nPulses)*pi/180;
-% FA(2:2:end)=-FA(2:2:end);
 
-%   FA(2:4:end)=-FA(2:4:end);
-%   FA(3:4:end)=1i*FA(3:4:end);
-%   FA(4:4:end)=-1i*FA(4:4:end);
-
+%% %%%%%%% RF Phase
+if strcmp(seqIn.phase, 'linear')
+    RFphasetrain = 0:1:seqIn.nPulses-1;
+elseif strcmp(seqIn.phase, 'quadratic')
+%     RFphasetrain = RFphasetrain.^2;
+    n = 0:1:seqIn.nPulses-1;
+%     n = 1:1:seqIn.nPulses
+%     RFphasetrain = 0.5 * n.^2;              % Hargreaves' lectures 
+%     RFphasetrain = 0.5 * n .* (n-1);        % Used by Nicolas
+    RFphasetrain = 0.5 * (n.^2 + n + 2);    % Handbook, (Zur et al 1991 ?)    
+end 
+RFphasetrain = RFphasetrain * seqIn.phaseIncrement*pi/180;
 
 %% TR
 if genTR == 1
@@ -158,12 +163,12 @@ if genTE == 1
     end
 end
 
+%%
 seqOut = seqIn;
 seqOut.FA = FA;
 seqOut.TE = TE;
 seqOut.TR = TR;
-
-
+seqOut.Phi = RFphasetrain;
 
 end
 
