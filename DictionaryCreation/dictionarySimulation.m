@@ -1,4 +1,4 @@
-function [dictionary, Properties, Sequence, varargout] = dictionarySimulation(toRead)
+function [dictionary, Properties, Sequence, varargout] = dictionarySimulation(input)
 
 fprintf('Starting simulation tool... \n')
 
@@ -7,7 +7,17 @@ tmpRootDir  = fileparts(mfilename('fullpath'));
 idx = strfind(tmpRootDir,'/');
 rootDir = tmpRootDir(1:idx(end));
 
-[toDo, PulseProfile, Properties, Sequence, Dico] = readParameters([rootDir, 'DictionaryCreation/dicoSimParameters/', toRead]);
+if ischar(input)
+    [toDo, PulseProfile, Properties, Sequence, Dico] = readParameters([rootDir, 'DictionaryCreation/dicoSimParameters/', input]);
+elseif isstruct(input)
+    toDo = input.toDo;
+    PulseProfile = input.PulseProfile;
+    Properties = input.Properties;
+    Sequence = input.Sequence;
+    Dico = input.Dico;
+else
+    error('Input must be the path to text file containing simulation parameters, or a struct already containing them');
+end
 
 if toDo.saveDico
     if exist([rootDir, 'DictionaryCreation/Results/', Dico.saveName], 'dir')
@@ -21,7 +31,7 @@ if toDo.saveDico
     end
     
     assert(mkdir([rootDir, 'DictionaryCreation/Results/', Dico.saveName]))
-    copyfile([rootDir, 'DictionaryCreation/dicoSimParameters/', toRead], [rootDir, 'DictionaryCreation/Results/',Dico.saveName, '/', toRead]);
+    copyfile([rootDir, 'DictionaryCreation/dicoSimParameters/', input], [rootDir, 'DictionaryCreation/Results/',Dico.saveName, '/', input]);
     fprintf('  Parameter file loaded and copied\n')  
 end
 
@@ -93,7 +103,8 @@ if toDo.computeDico
         case 'EPG'
             fprintf('  EPG computation... \n')      
             % Call epg overlay function
-            [dictionary, tF] = EpgOverlay(Properties, Sequence);            
+            [dictionary, tF, ~] = EpgOverlay(Properties, Sequence);            
+%             [~, tF, dictionary] = EpgOverlay(Properties, Sequence); % phase demodulated 
             fprintf('  Computation completed in %i s\n', tF)            
             
             % Saving the dictionary if asked to
