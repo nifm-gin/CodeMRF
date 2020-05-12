@@ -14,7 +14,7 @@ function [seqOut] = genSeq(seqIn)
 % lobes, can be 0
 % Sequence.phases controls the phase increment of the FA, 
 % 0: no alternance, 2: pi increments, (4: pi/2 increments NOT IMPLEMENTED YET)
-% Sequence.phaseIncrement is the increment on RF phase, starting at 0
+% Sequence.phaseIncrement is the increment on RF phase, starting at 0 (degree)
 
 %% Check input
 % check lobeShape size
