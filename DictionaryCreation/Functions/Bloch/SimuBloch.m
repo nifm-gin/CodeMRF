@@ -10,7 +10,7 @@ N=numel(RFalphatrain);
 Trf = 1e-3; %as in MRVox
 gradAmp = gradAmp * 1e2; % Conversion from T/m to G/cm
 gamma = 4258; % Hz/G.
-numPos = 100;
+numPos = 1000;
 x = linspace(-fov/2, fov/2, numPos); % positions in m
 x = x * 1e2; % positions in cm for C function
 % x =-2:.04:2; % isochromats so we can simulate effects of gradients x =-2:.02:2
