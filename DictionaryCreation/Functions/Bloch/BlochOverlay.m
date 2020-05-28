@@ -71,5 +71,5 @@ else
     end
     tF = round(toc(t));
 end
-dictionary = dictionary';
+dictionary = dictionary;
 end

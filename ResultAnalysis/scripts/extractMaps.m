@@ -22,7 +22,7 @@ function Reconstruction = extractMaps(Reconstruction, Images, Properties, dictio
     
     % create matched signals cell
     Reconstruction.sigMatch = cell(Images.nZ);
-    toKeep = repmat(~Reconstruction.toSkip, [1,1,500]);
+    toKeep = repmat(~Reconstruction.toSkip, [1,1,size(dictionary, 2)]);
     for z = 1 : Images.nZ
         Reconstruction.sigMatch{z} = nan(Images.nY, Images.nY, Images.nImages);
         Reconstruction.sigMatch{z}(toKeep) = dictionary(Reconstruction.idxMatch(~Reconstruction.toSkip),:);

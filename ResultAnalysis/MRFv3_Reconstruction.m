@@ -1,4 +1,4 @@
-function [Images, Reconstruction, dictionary, Properties] = MRFv3_Reconstruction(acqPath, pathToDico, flagCallGUI)
+function [Images, Reconstruction, dictionary, Properties] = MRFv3_Reconstruction(acqPath, pathToDico, flagCallGUI, lastEcho)
 % Performs MRF reconstruction of data from acqPath with dictionary from
 % pathToDico, optionnaly calls dataVsMatch GUI
 % -------------------------------------------------------------------------
@@ -8,6 +8,8 @@ function [Images, Reconstruction, dictionary, Properties] = MRFv3_Reconstruction
 % generation, should contain dico_*.mat and prop_*.mat files
 % - flagCallGUI: optional flag to launch dataVsMatch GUI at the end of
 % process, default 1
+% - lastEcho: optional, indicates the last echo to consider. Default is to
+% use all echoes
 %
 % - Images: struct containing Image (loaded) data
 % - Reconstruction: struct containing data from Reco such as score map and
@@ -22,7 +24,13 @@ fprintf('Starting reconstruction tool... \n')
 
 if nargin < 2
     error('At least two input arguments needed')
-elseif nargin < 3
+end
+
+if nargin < 4
+    lastEcho = 0;
+end
+
+if nargin < 3
     flagCallGUI = 1;
 end
 %% Load images 
@@ -34,6 +42,10 @@ end
 
 % acqPath = '~/Data/IRM/20200310_144251_tube_lego_1_1/4';
 % acqPath = '~/Data/IRM/20200311_103846_AVC_HP1_R1_1_1/10';
+%% Check lastEcho parameter
+lastEcho = round(lastEcho);
+assert(lastEcho >= 0, 'lastEcho must be positive, can be 0 to consider all echoes');
+
 %% Load Dico
 fprintf('Loading dictionary and corresponding parameters... ')
 % pathToDico = '/home/aurelien/Installations/CodeMRF/DictionaryCreation/Results/ad1000Calculated_v9_ph0_v2';
@@ -43,10 +55,16 @@ load(fullfile(pathToDico, ['dico_', pathSplit{end}, '.mat']), 'dictionary')
 % load([pathToDico, filesep, 'dico_', pathSplit{end}, '.mat'], 'dictionary')
 % load([pathToDico, filesep, 'prop_', pathSplit{end}, '.mat'], 'Properties')
 load(fullfile(pathToDico, ['prop_', pathSplit{end}, '.mat']), 'Properties')
+
+if lastEcho == 0 %if 0, last echo is relaly the last echo provided
+    lastEcho = size(dictionary, 2);
+end
+
+dictionary = dictionary(:, 1:lastEcho);
 fprintf('Done\n')
 %% Read dicom files in order
 fprintf('Reading dicom files... ')
-Images = dcm2matrix_MRFv3(acqPath);
+Images = dcm2matrix_MRFv3(acqPath, lastEcho);
 assert(Images.nImages == size(dictionary,2), sprintf('Signal size differs between data (%i) and dictionary (%i)', Images.nImages, size(dictionary,2))) 
 fprintf('Done\n')
 %% renormalization

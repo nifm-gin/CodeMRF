@@ -1,12 +1,18 @@
-function Images = dcm2matrix_MRFv3(acqPath)
+function Images = dcm2matrix_MRFv3(acqPath, lastEcho)
 % Fetch useful parameters from Bruker Files (e.g. method, visu_pars) and 
 % reads dicom files accordingly
 % -------------------------------------------------------------------------
 % - acqPath: Path to scan ex: "/home/data/yyyymmdd_scan_/1", this directory
 % should contain the method file and pdata/ dir
+% - lastEcho: optional, indicates the last echo to consider. By default all
+% echoes are used.
 %
 % - Images: Structure containing image data and metadata
 % -------------------------------------------------------------------------
+
+if nargin < 2
+    lastEcho = 0;
+end
 
 %% Set paths
 % visu_pars is read in pdata/1 (or reco number)
@@ -62,13 +68,19 @@ Images.nImages = frameCount/Images.nZ;
 %"Data Slope" needed to apply transform to data to "real" values
 VisuCoreDataSlope=scan_acqp('##$VisuCoreDataSlope=',texteVisuPars,1); 
 
+if lastEcho == 0
+    lastIdx = Images.nImages;
+else
+    lastIdx = lastEcho;
+end
+
 %% Open all images in order
 % Images.dossier=strcat(Images.dossier_visu,'/dicom/');
-Images.Images_dicom = zeros(Images.nX, Images.nY, Images.nZ, Images.nImages);
+Images.Images_dicom = zeros(Images.nX, Images.nY, Images.nZ, lastIdx);
 nDcm = Images.nImages*Images.nZ;
 
 for slice = 1 : Images.nZ
-    for pulse = 0: Images.nImages-1
+    for pulse = 0: lastIdx-1
         if nDcm > 999
             filename = sprintf('MRIm%04i.dcm', pulse*Images.nZ +1 + (slice-1));
         elseif nDcm > 99
@@ -85,9 +97,11 @@ end
 
 %% Apply linear transformation
 for z = 1 : Images.nZ
-    for i=1:Images.nImages
+    for i=1:lastIdx
         Images.Images_dicom_rescaled(:,:,z, i) = double(Images.Images_dicom(:,:, z, i))*VisuCoreDataSlope(i);%/32767;%*Images.VisuCoreDataMax(i)
     end
 end
+
+Images.nImages = lastIdx;
 
 end
