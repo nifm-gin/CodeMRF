@@ -51,8 +51,10 @@ else % Perform all matching at once
     score(localScore > score) = localScore(localScore > score);
 end
     % Reshape results to original image dimensions
-    score = reshape(score, S(1:end-1));
-    idxMatch = reshape(idxMatch, S(1:end-1));
+    if numel(S) > 2
+        score = reshape(score, S(1:end-1));
+        idxMatch = reshape(idxMatch, S(1:end-1));       
+    end
     
     % ensure same result where there is no signal
     idxMatch(score == 0) = nan;
