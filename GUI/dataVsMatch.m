@@ -333,7 +333,7 @@ function signals_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to signals (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-disp(handles.sliceSelector.Value)
+% disp(handles.sliceSelector.Value)
 C = get(hObject, 'CurrentPoint');
 frame = round(C(1,1));
 clickableImage(handles.rawDataPlot, squeeze(handles.Images.Images_dicom(:,:, handles.sliceSelector.Value, frame)), gray)
