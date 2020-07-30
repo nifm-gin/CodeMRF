@@ -48,8 +48,8 @@ Shim = 0;
 dictionary = zeros(numel(T1list), nP);
 
 % parfor if nSignals > nWorkers
-ps = parallel.Settings;
-if numel(T1list) > ps.SchedulerComponents.NumWorkers
+% ps = parallel.Settings;
+if numel(T1list) > 6; %ps.SchedulerComponents.NumWorkers
     if isempty(gcp)
         delete(gcp('nocreate'))
         parpool;

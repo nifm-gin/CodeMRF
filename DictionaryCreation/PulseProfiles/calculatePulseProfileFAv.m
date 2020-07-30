@@ -35,9 +35,9 @@ function [ Rot, FAlist, positions_mm, SliceThickness_th_mm, p0 ] = calculatePuls
     T2 = Inf;
     % x_mm = f/(GradCalConst*SliceGrad/100);
 %     x_mm=[-3:6/1740:3]; %--------------------------------------------------------------------------------------------------------------------------
-    x_mm = 0;
+    x_mm = linspace(-1.16, 1.16, 101);
 % center = find(abs(x_mm) == min(abs(x_mm)),1);
-    plot_limits = 3;
+    plot_limits = 2;
     idx_plot = find(abs(x_mm)<plot_limits);
     positions_mm=x_mm(idx_plot);
     n_pos=length(positions_mm);

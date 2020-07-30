@@ -6,6 +6,9 @@ dicoPath = '/home/aurelien/Installations/CodeMRF/DictionaryCreation/Results/Jian
 figure; imagesc(R.T1Map); title('T1'); c = colorbar; set(get(c, 'title'), 'string', 'ms')
 figure; imagesc(R.T2Map); title('T2'); c = colorbar; set(get(c, 'title'), 'string', 'ms')
 
+%% load reco
+load('/SUMOONE/delphin/Data/20200624_095033_Brain2406_1_3/RECO_JiangNoInv_2406_df.mat')
+R = Reconstruction;
 %%
 close all
 figure; imagesc(R.T1Map);

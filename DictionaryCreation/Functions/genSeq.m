@@ -45,12 +45,13 @@ if numel(seqIn.TR)==1
     TR = repmat(seqIn.TR, [1, seqIn.nPulses]);
     genTR = 0;
     
-elseif numel(seqIn.TR)==2
-    genTR = 1;
-    
 elseif numel(seqIn.TR)== seqIn.nPulses
     TR = seqIn.TR;
     genTR = 0;
+    
+elseif numel(seqIn.TR)==2
+    genTR = 1;
+    
 else
     error('Invalid TR provided: 1 element for constant, 2 elements for range, nPulses for pre-made vector')
 end
@@ -61,13 +62,14 @@ if isempty(seqIn.TE)
 elseif numel(seqIn.TE)==1
     TE = repmat(seqIn.TE, [1, seqIn.nPulses]);
     genTE = 0;
+
+elseif numel(seqIn.TR)== seqIn.nPulses
+    TE = seqIn.TE;
+    genTE = 0;    
     
 elseif numel(seqIn.TE)==2
     genTE = 1;
     
-elseif numel(seqIn.TR)== seqIn.nPulses
-    TE = seqIn.TE;
-    genTE = 0;
     
 else
     error('Invalid TE provided: empty for TR/2, 1 element for constant, 2 elements for range, nPulses for pre-made vector')

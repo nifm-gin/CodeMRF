@@ -6,7 +6,7 @@
 #define GAMMA   26753.0
 #define TWOPI	6.283185
 
-//#define DEBUG
+// #define DEBUG
 
 
 
@@ -329,7 +329,9 @@ mcurr0[2] = *mz;		/* Set starting z magnetization */
 for (tcount = 0; tcount < ntime; tcount++)
 	{
 		/*	Rotation 	*/
-
+    #ifdef DEBUG
+	    printf("in blochsim, tcount = %d\n", tcount);
+	#endif
 	rotz = -(*xgrad++ * gammadx + *ygrad++ * gammady + *zgrad++ * gammadz +
 								df*TWOPI ) * *tsteps;
 	rotx = (- *b1real++ * GAMMA * *tsteps);
@@ -459,7 +461,6 @@ e2 = (double *) malloc(ntime * sizeof(double));
 e1ptr = e1;
 e2ptr = e2;
 tstepsptr = tsteps;
-
 for (count=0; count < ntime; count++)
 	{
 	*e1ptr++ = exp(- *tstepsptr / t1);
@@ -572,7 +573,9 @@ int count;
 #endif
 
 ntime = mxGetM(prhs[0]) * mxGetN(prhs[0]);	/* Number of Time, RF, and Grad points */
-
+#ifdef DEBUG
+    printf("ntime: %d\n", ntime);
+#endif
 
 /* ====================== RF (B1) =========================
  * :  If complex, split up.  If real, allocate an imaginary part. ==== */
@@ -684,11 +687,11 @@ else
             printf("ntime = %d\n", ntime);
              if (ntime == 2)
                {
-                 printf("t = %d, %d\n", tp[0], tp[1]);
+                 printf("t = %f, %f\n", tp[0], tp[1]);
                }
              if (ntime ==3)
                {
-                 printf("t = %d, %d, %d\n", tp[0], tp[1], tp[2]);
+                 printf("t = %f, %f, %f\n", tp[0], tp[1], tp[2]);
                }
         #endif
 		}
@@ -887,14 +890,15 @@ else
   printf("ntime = %d\n", ntime);
   if (ntime == 2)
     {
-      mexPrintf("gx = %d, %d\n", gx[0], gx[1]);
-      mexPrintf("t = %d, %d\n", tp[0], tp[1]);
+      mexPrintf("gx = %f, %f\n", gx[0], gx[1]);
+      mexPrintf("t = %f, %f\n", tp[0], tp[1]);
     }
   if (ntime ==3)
     {
-      mexPrintf("gx = %d, %d, %d\n", gx[0], gx[1], gx[2]);
-      mexPrintf("t = %d, %d, %d\n", tp[0], tp[1], tp[2]);
+      mexPrintf("gx = %f, %f %f\n", gx[0], gx[1], gx[2]);
+      mexPrintf("t = %f, %f, %f\n", tp[0], tp[1], tp[2]);
     }
+    mexPrintf("size tp = %d\n", (int) sizeof(tp)/sizeof(tp[0]));
 #endif
 
 blochsimfz(b1r,b1i,gx,gy,gz,tp,ntime,t1,t2,df,nf,dx,dy,dz,npos,mx,my,mz,md);
