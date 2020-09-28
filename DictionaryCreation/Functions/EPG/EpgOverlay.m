@@ -32,7 +32,8 @@ switch Sequence.m0(3)
 end
 
 dictionary = zeros(numel(T1list), nP);
-% dictionarySD = zeros(numel(T1list), nP);
+dictionary = complex(dictionary, 0);
+dictionarySD = [];
 % parfor if nSignals > nWorkers
 ps = parallel.Settings;
 if numel(T1list) > 6 %ps.SchedulerComponents.NumWorkers
@@ -43,7 +44,7 @@ if numel(T1list) > 6 %ps.SchedulerComponents.NumWorkers
     t = tic;
     parfor_progress(numel(T1list));
     parfor i = 1:numel(T1list)
-        [dictionary(i,:), ~] = abs(EPG(nP, T1list(i), T2list(i), dflist(i), FA.*B1list(i), Phi, TR, TE, spoilType, invPulse));
+        dictionary(i,:) = EPG(nP, T1list(i), T2list(i), dflist(i), FA.*B1list(i), Phi, TR, TE, spoilType, invPulse);
         parfor_progress;
     end
     parfor_progress(0);
@@ -53,7 +54,7 @@ else
     % Serial for otherwise
     t = tic;
     for i = 1:numel(T1list)
-        [dictionary(i,:), ~] = abs(EPG(nP, T1list(i), T2list(i), dflist(i), FA.*B1list(i), Phi, TR, TE, spoilType, invPulse));
+        dictionary(i,:) = EPG(nP, T1list(i), T2list(i), dflist(i), FA.*B1list(i), Phi, TR, TE, spoilType, invPulse);
     end
     tF = round(toc(t));
 end
