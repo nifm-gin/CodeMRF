@@ -4,16 +4,16 @@ clear dictionary
 
 % flag to indicate if need to load a dico or json files
 flagIsDico = 1;
-dicoPath = '/home/aurelien/Installations/MP3/data/dictionaries/G0A0/DICO.mat';
+dicoPath = '/media/aurelien/QQCHSE/test';
 % path to pre json
 prePath = '/home/aurelien/Installations/MP3/data/dictionaries/G0A0/2020-08-06_09-27-05-090_ModelPar_Blood_3D_anisotropic_Dict_GESFIDE_PRE_dico.json'; 
 % path to post json
 postPath = '/home/aurelien/Installations/MP3/data/dictionaries/G0A0/2020-08-06_09-27-05-090_ModelPar_Blood_3D_anisotropic_Dict_GESFIDE_POST_dico.json';
 
 % path to save the files
-outPath = '/home/aurelien/Installations/CodeMRF/DictionaryCreation/Results/testFromMRVOX2';
+outPath = '/media/aurelien/QQCHSE/test';
 % combination of signals ('Ratio', 'Concat', 'Hybrid', 'Other')
-comb = 'Concat';
+comb = 'Hybrid';
 
 %%
 if flagIsDico
@@ -48,7 +48,18 @@ switch comb
         error("Please specify a combination ('Ratio', 'Concat', 'Hybrid', 'Other')")
 end
 
-nbParameters = numel(Parameters.Labels) - 3; % nb labels -3 to account for the 3 mandatory parameters (Id, RTry, Timer)
+nbParameters = numel(Parameters.Labels); %need to remove mandatory parameters (Id, RTry, Timer)
+toKeep = true(1, nbParameters);
+
+for i = 1:nbParameters
+   if contains(Parameters.Labels{i}, 'Id') || contains(Parameters.Labels{i}, 'RTry') || contains(Parameters.Labels{i}, 'Timer') 
+       toKeep(i) = 0;
+   end
+end
+
+nbParameters = nnz(toKeep);
+Parameters.Labels = Parameters.Labels(toKeep);
+Parameters.Par = Parameters.Par(:, toKeep);
 
 for i = 1:nbParameters
    Split = strsplit(Parameters.Labels{i},'.');
