@@ -8,7 +8,18 @@ idx = strfind(tmpRootDir,'/');
 rootDir = tmpRootDir(1:idx(end));
 
 if ischar(input)
-    [toDo, PulseProfile, Properties, Sequence, Dico] = readParameters([rootDir, 'DictionaryCreation/dicoSimParameters/', input]);
+    [~, ~, inputExt] = fileparts(input);
+    switch inputExt 
+        case '.txt'
+            [toDo, PulseProfile, Properties, Sequence, Dico] = readParameters([rootDir, 'DictionaryCreation/dicoSimParameters/', input]);
+        case '.mat'
+            load([rootDir, 'DictionaryCreation/dicoSimParameters/', input]); % Will load 'struct_init'
+            toDo = struct_init.toDo;
+            PulseProfile = struct_init.PulseProfile;
+            Properties = struct_init.Properties;
+            Sequence = struct_init.Sequence;
+            Dico = struct_init.Dico;
+    end
 elseif isstruct(input)
     toDo = input.toDo;
     PulseProfile = input.PulseProfile;
@@ -31,8 +42,13 @@ if toDo.saveDico
     end
     
     assert(mkdir([rootDir, 'DictionaryCreation/Results/', Dico.saveName]))
-    copyfile([rootDir, 'DictionaryCreation/dicoSimParameters/', input], [rootDir, 'DictionaryCreation/Results/',Dico.saveName, '/', input]);
-    fprintf('  Parameter file loaded and copied\n')  
+    if ~isstruct(input)
+        copyfile([rootDir, 'DictionaryCreation/dicoSimParameters/', input], [rootDir, 'DictionaryCreation/Results/',Dico.saveName, '/', input]);
+        
+    else
+        
+    end
+    fprintf('  Parameter file loaded and copied\n')
 end
 
 %% PROPERTIES
