@@ -4,7 +4,7 @@ function noisedDictionary = addNoise(dictionary, noiseType, SNR)
 % Input :
 % - dictionary    : nEntries * mTimePoints real-valued matrix. Mandatory
 % - noiseType     : 'aliasing' or 'thermal'. Mandatory
-% - SNR           : desired Signal-to-Noise Ratio for noise generation, computed as SNR = sqrt(signal^2/sigma),
+% - SNR           : desired Signal-to-Noise Ratio for noise generation, computed as SNR = mean(signal)/sigma,
 %                   where sigma is the noise standard deviation. Optional,
 %                   default = 4
 % Output:
@@ -29,9 +29,9 @@ switch noiseType
         noisedDictionary = dictionary + noiseRealPart + 1i*noiseImagPart;
 
     case 'thermal'
-        noiseRealPart = randn(size(dictionary)) .* sqrt(max(abs(dictionary), [], 2).^2 / SNR);
+        noiseRealPart = randn(size(dictionary)) .* ( mean(abs(dictionary), 'all')/ SNR );
         if ~isreal(dictionary)
-            noiseImagPart = randn(size(dictionary)) .* sqrt(max(abs(dictionary), [], 2).^2 / SNR);
+            noiseImagPart = randn(size(dictionary)) .* ( mean(abs(dictionary), 'all')/ SNR );
         else
             noiseImagPart = zeros(size(dictionary));
         end
