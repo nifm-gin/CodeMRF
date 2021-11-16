@@ -117,20 +117,25 @@ for lobe = 1:seqIn.nLobes
 %     end
 %     FA(lobeStart+1:lobeStart+nPtsLobe) = FA(lobeStart+1:lobeStart+nPtsLobe).*phaseMult;
 end
-FA=FA(1:seqIn.nPulses)*pi/180;
+FA=FA(1:seqIn.nPulses)*pi/180; % conversion to radians
 
 %% %%%%%%% RF Phase
 if strcmp(seqIn.phase, 'linear')
     RFphasetrain = 0:1:seqIn.nPulses-1;
+    RFphasetrain = RFphasetrain * seqIn.phaseIncrement*pi/180; % conversion to radians
 elseif strcmp(seqIn.phase, 'quadratic')
 %     RFphasetrain = RFphasetrain.^2;
     n = 0:1:seqIn.nPulses-1;
 %     n = 1:1:seqIn.nPulses
 %     RFphasetrain = 0.5 * n.^2;              % Hargreaves' lectures 
 %     RFphasetrain = 0.5 * n .* (n-1);        % Used by Nicolas
-    RFphasetrain = 0.5 * (n.^2 + n + 2);    % Handbook, (Zur et al 1991 ?)    
+    RFphasetrain = 0.5 * (n.^2 + n + 2);    % Handbook, (Zur et al 1991 ?)
+    RFphasetrain = RFphasetrain * seqIn.phaseIncrement*pi/180; % conversion to radians
+elseif strcmp(seqIn.phase, 'copy')
+    assert(numel(seqIn.phaseIncrement) == seqIn.nPulses, 'When using "Copy" phase type, the num. of elts of the phase increment must be nPulses');
+    RFphasetrain = seqIn.phaseIncrement*pi/180;
 end 
-RFphasetrain = RFphasetrain * seqIn.phaseIncrement*pi/180;
+
 
 %% TR
 if genTR == 1

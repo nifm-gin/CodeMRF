@@ -41,5 +41,5 @@ switch noiseType
     otherwise
         error('Please specify noise type (either "aliasing" or "thermal"')
 end
-
+    noisedDictionary(noisedDictionary < 0) = 0;
 end

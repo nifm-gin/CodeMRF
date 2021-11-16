@@ -58,7 +58,7 @@ end
 
 for k = 1:nPulses
     P = EPG_rf(P,RFalphatrain(k),RFphasetrain(k));   %  RF pulse
-
+      % EPG_grelax(FpFmZ,T1,T2,T,kg,D,Gon,noadd, df)
     P = EPG_grelax(P,T1,T2,TEtrain(k),0,0,spoilBeforeAcq,1, df * ~spoilBeforeAcq);  %  Relaxation with spoiler -> df unaccounted
 
     s(k) = P(1,1);  % Signal is F0 state.

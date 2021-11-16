@@ -1,5 +1,5 @@
-lastEcho = 200;
-I = dcm2matrix_MRFv3('/home/aurelien/Data/IRM/20200611_091212_crane_1_1/27', lastEcho);
+lastEcho = 150;
+I = dcm2matrix_MRFv3('/SUMMER/projects/Share/Data pour Aurélien/20210505_112732_20210428_Gi_R4_J2D0pre_20210428_Gi_R4_J2D0p_1_1/3', lastEcho);
 Image = I.Images_dicom_rescaled;
 %%
 figure();

@@ -89,7 +89,7 @@ Reconstruction.treshholdOnOff='Off';
 if strcmp(Reconstruction.treshholdOnOff,'On')
     Reconstruction.seuil=0.5;
 end
-if length(Properties.vlist)>1
+if isfield(Properties, 'vlist') && length(Properties.vlist)>1
     
     analyse_flux_MRFv3;
     for kx=1:Images.nX

@@ -19,7 +19,7 @@ if fid > 0
     fprintf(fid,'%d\n',Sequence.Ncycles);
 
     for k=1:Sequence.nPulses
-        fprintf(fid,'%+f %f %f\n',(Sequence.FA(k))*180/pi,Sequence.TR(k),Sequence.TE(k)); 
+        fprintf(fid,'%+f %f %f %f\n',(Sequence.FA(k))*180/pi,Sequence.TR(k),Sequence.TE(k), Sequence.Phi(k)*180/pi); 
         % Car FA en rad dans cette simu et a priori alternance +/- mais pas �crit dans le vecteur FA
     end
 

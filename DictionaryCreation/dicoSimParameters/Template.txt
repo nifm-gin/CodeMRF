@@ -5,7 +5,7 @@ toDo.dispSeq                    = 1;
 toDo.prepDico                   = 1;
 toDo.computeDico                = 1;
 toDo.dispVar                    = 1;
-toDo.testRobustness             = 1;
+toDo.testRobustness             = 0;
 toDo.savePropStruct             = 1;
 toDo.saveSeqStruct              = 1;
 toDo.exportSeqPV6               = 1;
@@ -29,17 +29,17 @@ Properties.toLoad               = 'struct_properties_AD_Test';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Sequence %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %-------------- If New Sequence --------------%
 Sequence.nPulses                = 1000; 
-Sequence.spoilType              = 'FID';                            % 'FID' = Spoiler after acq, 'Echo' = Spoiler before Acq, 'bSSFP' = no spoiler
-Sequence.nLobes                 = 5;
-Sequence.FAmin                  = 0;                                % Degree
-Sequence.FAmax                  = [35 45 70 45 35];                 % Degree
-Sequence.FAnoise                = 0;                                % Degree, noise = FAnoise*rand -FAnoise/2 
+Sequence.spoilType              = 'bSSFP';                            % 'FID' = Spoiler after acq, 'Echo' = Spoiler before Acq, 'bSSFP' = no spoiler
+Sequence.nLobes                 = 4;
+Sequence.FAmin                  = [10,10,10,10];                 % Degree
+Sequence.FAmax                  = [60,30,60,30];                 % Degree
+Sequence.FAnoise                = 5;                                % Degree, noise = FAnoise*rand -FAnoise/2 
 Sequence.lobeShape              = {"sin"};                          % {"cos", "sin", "triangle", "rampUp", "rampDown", "const", "rand"};
 Sequence.skipTR                 = 10;                               % nb of TR that have FA=0 between lobes, can be 0;
-Sequence.TR                     = [11.5, 14.5];                     % 1 element for constant, 2 elements for range, nPulses for pre-made vector
-Sequence.TE                     = [2];                              % 1 element for constant, 2 elements for range, nPulses for pre-made vector, empty for TR/2
+Sequence.TR                     = [10.5, 14];                       % 1 element for constant, 2 elements for range, nPulses for pre-made vector
+Sequence.TE                     = [];                              % 1 element for constant, 2 elements for range, nPulses for pre-made vector, empty for TR/2
 Sequence.phases                 = 0;                                % 0: no alternance, 2: pi increments, 4: pi/2 increments  
-Sequence.phaseIncrement         = 0;                                % Degree, phase increment on RF pulses
+Sequence.phaseIncrement         = 180;                                % Degree, phase increment on RF pulses
 Sequence.phase                  = 'linear';                         % 'linear' or 'quadratic'
 Sequence.Ncycles                = 4;                                % Dephasing cycles
 Sequence.m0                     = [0, 0, -1];                       % No inversion, [0,0,-1] if inversion

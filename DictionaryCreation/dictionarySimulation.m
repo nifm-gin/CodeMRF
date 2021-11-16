@@ -239,11 +239,11 @@ if toDo.exportSeqPV6
     fprintf('  Exporting the sequence to a .txt file... ')
     %     name = strcat(Sequence.toSave,PulseProfile.PulseShape);
     %     name = saveName
-    if exist(strcat([Dico.saveName, '_PV6'],'.txt'),'file')==2
-        Dico.saveName=strcat(Dico.saveName, datestr(now,'HH-MM-SS'));
-        display(strcat('Le fichier existe deja, le nouveau fichier est renomme en ', Dico.saveName, ' '))
-    end
-    sequence2txt_mrfv3([rootDir, 'DictionaryCreation/Results/', Dico.saveName, '/'], [Dico.saveName, '_PV6'], Sequence);
+%     if exist(strcat([Dico.saveName, '_PV6'],'.txt'),'file')==2
+%         Dico.saveName=strcat(Dico.saveName, datestr(now,'HH-MM-SS'));
+%         display(strcat('Le fichier existe deja, le nouveau fichier est renomme en ', Dico.saveName, ' '))
+%     end
+    sequence2txt_mrfv3([rootDir, 'DictionaryCreation/Results/', Dico.saveName, '/'], [Dico.saveName, '_PV'], Sequence);
     fprintf('Done \n')
 end
 

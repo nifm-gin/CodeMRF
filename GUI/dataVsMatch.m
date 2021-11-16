@@ -118,14 +118,20 @@ handles.valTable.Data{4,2}='Hz';
 handles.valTable.Data{6,2}='mm/s';
 % set(handles.rawDataPlot, 'PickableParts', 'all'); 
 % Set raw plot
-clickableImage(handles.rawDataPlot, squeeze(handles.Images.Images_dicom(:,:,round(handles.Images.nImages/2))))
+if handles.Images.nZ > 1
+    set(handles.sliceSelector, 'Min', 1, 'Max', handles.Images.nZ, 'SliderStep', [1, 1]/(handles.Images.nZ-1));
+else
+    set(handles.sliceSelector, 'Min', 1, 'Max', handles.Images.nZ, 'SliderStep', [1, 1]/1);
+end
+set(handles.sliceSelector, 'Value', 1);
+set(handles.sliceText, 'String', 'Slice: 1');
+clickableImage(handles.rawDataPlot, squeeze(handles.Images.Images_dicom(:,:, get(handles.sliceSelector, 'Value'), round(handles.Images.nImages/2))))
 set(handles.rawDataPlot, 'ColorMap', gray);
 % Set slice selector initial value 
 set(handles.frameNum, 'String', 'Frame:');
 % Set slice selector range
 % maxPt = round(min(size(handles.Images.Images_dicom,1), size(handles.Images.Images_dicom,2))/2);
 maxPt = 5;
-set(handles.sliceSelector, 'Min', 1, 'Max', handles.Images.nZ);
 set(handles.frameNum, 'String', sprintf('Frame : %i/%i', round(handles.Images.nImages/2), handles.Images.nImages ));
 set(handles.avgSlider, 'Min', 1, 'Max', maxPt);
 set(handles.avgSlider, 'SliderStep', [1,1]/(maxPt-1), 'Value', 1)
@@ -140,7 +146,10 @@ function dataSelector1_Callback(hObject, eventdata, handles)
 localHandle = handles.image1;
 choice = cellstr(get(hObject,'String'));
 choice = choice{get(hObject,'Value')};
+set(handles.dataSelector1, 'Value', get(hObject,'Value'));
+handles.choice1 = choice;
 changePlot(localHandle, choice, handles);
+guidata(hObject,handles);
 
 % --- Executes during object creation, after setting all properties.
 function dataSelector1_CreateFcn(hObject, eventdata, handles)
@@ -163,7 +172,10 @@ function dataSelector2_Callback(hObject, eventdata, handles)
 localHandle = handles.image2;
 choice = cellstr(get(hObject,'String'));
 choice = choice{get(hObject,'Value')};
+set(handles.dataSelector2, 'Value', get(hObject,'Value'));
+handles.choice2 = choice;
 changePlot(localHandle, choice, handles);
+guidata(hObject,handles);
 
 % --- Executes during object creation, after setting all properties.
 function dataSelector2_CreateFcn(hObject, eventdata, handles)
@@ -185,7 +197,11 @@ function dataSelector3_Callback(hObject, eventdata, handles)
 localHandle = handles.image3;
 choice = cellstr(get(hObject,'String'));
 choice = choice{get(hObject,'Value')};
+set(handles.dataSelector3, 'Value', get(hObject,'Value'));
+handles.choice3 = choice;
 changePlot(localHandle, choice, handles);
+guidata(hObject,handles);
+
 
 % --- Executes during object creation, after setting all properties.
 function dataSelector3_CreateFcn(hObject, eventdata, handles)
@@ -200,6 +216,13 @@ end
 
 % --- Executes on selection change in sliceSelector.
 function sliceSelector_Callback(hObject, eventdata, handles)
+set(handles.sliceText, 'String', ['Slice: ', num2str(get(handles.sliceSelector, 'Value'))]);
+clickableImage(handles.rawDataPlot, squeeze(handles.Images.Images_dicom(:,:, get(handles.sliceSelector, 'Value'), round(handles.Images.nImages/2))))
+set(handles.rawDataPlot, 'ColorMap', gray);
+changePlot(handles.image1, handles.choice1, handles)
+changePlot(handles.image2, handles.choice2, handles)
+changePlot(handles.image3, handles.choice3, handles)
+
 % hObject    handle to sliceSelector (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -251,41 +274,76 @@ function changePlot(localHandle, choice, handles)
 % executes chen changing selection below plots
 switch choice
     case 'Score'
-        clickableImage(localHandle, handles.Reconstruction.innerproduct);
-        caxis(localHandle, [min(handles.Reconstruction.innerproduct, [], 'All'), max(handles.Reconstruction.innerproduct, [], 'All')])
+        clickableImage(localHandle, handles.Reconstruction.innerproduct(:,:,get(handles.sliceSelector, 'Value')));
+        caxis(localHandle, [min(handles.Reconstruction.innerproduct(:,:,get(handles.sliceSelector, 'Value')), [], 'All'),...
+            max(handles.Reconstruction.innerproduct(:,:,get(handles.sliceSelector, 'Value')), [], 'All')])
         colorbar(localHandle)
     case 'PD'
-        clickableImage(localHandle, handles.Reconstruction.PDmap);
-        caxis(localHandle, [min(handles.Reconstruction.PDmap, [], 'All'), max(handles.Reconstruction.PDmap, [], 'All')])
+        clickableImage(localHandle, handles.Reconstruction.PDmap(:,:,get(handles.sliceSelector, 'Value')));
+        caxis(localHandle, [min(handles.Reconstruction.PDmap(:,:,get(handles.sliceSelector, 'Value')), [], 'All'),...
+            max(handles.Reconstruction.PDmap(:,:,get(handles.sliceSelector, 'Value')), [], 'All')])
         colorbar(localHandle)
     case 'T1'
-        clickableImage(localHandle, handles.Reconstruction.T1Map);
-        caxis(localHandle, [min(handles.Reconstruction.T1Map, [], 'All'), max(handles.Reconstruction.T1Map, [], 'All')])
+        clickableImage(localHandle, handles.Reconstruction.T1Map(:,:,get(handles.sliceSelector, 'Value')));
+        caxis(localHandle, [min(handles.Reconstruction.T1Map(:,:,get(handles.sliceSelector, 'Value')), [], 'All'),...
+            max(handles.Reconstruction.T1Map(:,:,get(handles.sliceSelector, 'Value')), [], 'All')])
         c=colorbar(localHandle);
         set(get(c,'title'),'string','ms');
        
     case 'T2'
-        clickableImage(localHandle, handles.Reconstruction.T2Map);
-        caxis(localHandle, [min(handles.Reconstruction.T2Map, [], 'All'), max(handles.Reconstruction.T2Map, [], 'All')])
+        clickableImage(localHandle, handles.Reconstruction.T2Map(:,:,get(handles.sliceSelector, 'Value')));
+        caxis(localHandle, [min(handles.Reconstruction.T2Map(:,:,get(handles.sliceSelector, 'Value')), [], 'All'),...
+            max(handles.Reconstruction.T2Map(:,:,get(handles.sliceSelector, 'Value')), [], 'All')])
         c=colorbar(localHandle);
         set(get(c,'title'),'string','ms');
     case 'df'
-        clickableImage(localHandle, handles.Reconstruction.dfMap);
+        clickableImage(localHandle, handles.Reconstruction.dfMap(:,:,get(handles.sliceSelector, 'Value')));
         if numel(handles.Properties.df)>1
-            caxis(localHandle, [min(handles.Reconstruction.dfMap, [], 'All'), max(handles.Reconstruction.dfMap, [], 'All')])
+            caxis(localHandle, [min(handles.Reconstruction.dfMap(:,:,get(handles.sliceSelector, 'Value')), [], 'All'),...
+                max(handles.Reconstruction.dfMap(:,:,get(handles.sliceSelector, 'Value')), [], 'All')])
             c=colorbar(localHandle);
             set(get(c,'title'),'string','Hz');
         end
     case 'B1'        
-        clickableImage(localHandle, handles.Reconstruction.B1relMap);
+        clickableImage(localHandle, handles.Reconstruction.B1relMap(:,:,get(handles.sliceSelector, 'Value')));
         if numel(handles.Properties.B1rel)>1
-            caxis(localHandle, [min(handles.Reconstruction.B1relMap, [], 'All'), max(handles.Reconstruction.B1relMap, [], 'All')])
+            caxis(localHandle, [min(handles.Reconstruction.B1relMap(:,:,get(handles.sliceSelector, 'Value')), [], 'All'),...
+                max(handles.Reconstruction.B1relMap(:,:,get(handles.sliceSelector, 'Value')), [], 'All')])
             colorbar(localHandle)
         end
     case 'Match #'
-        clickableImage(localHandle, handles.Reconstruction.idxMatch);
-        caxis(localHandle, [min(handles.Reconstruction.idxMatch, [], 'All'), max(handles.Reconstruction.idxMatch, [], 'All')])
+        clickableImage(localHandle, handles.Reconstruction.idxMatch(:,:,get(handles.sliceSelector, 'Value')));
+        caxis(localHandle, [min(handles.Reconstruction.idxMatch(:,:,get(handles.sliceSelector, 'Value')), [], 'All'),...
+            max(handles.Reconstruction.idxMatch(:,:,get(handles.sliceSelector, 'Value')), [], 'All')])
         colorbar(localHandle)
+    case 'Vf'        
+        clickableImage(localHandle, handles.Reconstruction.VfMap(:,:,get(handles.sliceSelector, 'Value')));
+        if numel(handles.Properties.Vflist)>1
+            caxis(localHandle, [min(handles.Reconstruction.VfMap(:,:,get(handles.sliceSelector, 'Value')), [], 'All'),...
+                max(handles.Reconstruction.VfMap(:,:,get(handles.sliceSelector, 'Value')), [], 'All')])
+            colorbar(localHandle)
+        end
+    case 'R'        
+        clickableImage(localHandle, handles.Reconstruction.RMap(:,:,get(handles.sliceSelector, 'Value')));
+        if numel(handles.Properties.Rlist)>1
+            caxis(localHandle, [min(handles.Reconstruction.RMap(:,:,get(handles.sliceSelector, 'Value')), [], 'All'),...
+                max(handles.Reconstruction.RMap(:,:,get(handles.sliceSelector, 'Value')), [], 'All')])
+            colorbar(localHandle)
+        end
+    case 'SO2'        
+        clickableImage(localHandle, handles.Reconstruction.SO2Map(:,:,get(handles.sliceSelector, 'Value')));
+        if numel(handles.Properties.SO2list)>1
+            caxis(localHandle, [min(handles.Reconstruction.SO2Map(:,:,get(handles.sliceSelector, 'Value')), [], 'All'),...
+                max(handles.Reconstruction.SO2Map(:,:,get(handles.sliceSelector, 'Value')), [], 'All')])
+            colorbar(localHandle)
+        end
+    case 'S0'        
+        clickableImage(localHandle, handles.Reconstruction.B0offMap(:,:,get(handles.sliceSelector, 'Value')));
+        if numel(handles.Properties.B0offlist)>1
+            caxis(localHandle, [min(handles.Reconstruction.B0offMap(:,:,get(handles.sliceSelector, 'Value')), [], 'All'),...
+                max(handles.Reconstruction.B0offMap(:,:,get(handles.sliceSelector, 'Value')), [], 'All')])
+            colorbar(localHandle)
+        end    
     otherwise
         clickableImage(localHandle, zeros(size(handles.Images.Images_dicom, 1), size(handles.Images.Images_dicom, 2)));
 end
@@ -346,18 +404,18 @@ X = 1:handles.Images.nImages;
 handles.patch = zeros(handles.Images.nX, handles.Images.nY); % Initialize transparent mask for averaging region display
 if handles.avgSlider.Value == 1
     rawData = squeeze(handles.Images.Image_normalized_dicom(handles.x,handles.y, sliceIdx, :));
-    match = handles.Reconstruction.sigMatch{sliceIdx}(handles.x,handles.y, :);
+    match = handles.Reconstruction.sigMatch(handles.x,handles.y, sliceIdx, :);
     handles.patch(handles.x, handles.y) = 1; % Set visibility for current voxel
 else
     avg = handles.avgSlider.Value;
-    rawData = zeros(size(squeeze(handles.Images.Image_normalized_dicom(handles.x,handles.y,:))));
+    rawData = zeros(size(squeeze(handles.Images.Image_normalized_dicom(handles.x,handles.y, sliceIdx, :))));
     match = rawData;
     count = 0;
     % compute mean signal in a square around selected voxel
     for i = 0:2*avg-2
         for j=0:2*avg-2
-            rawData = rawData + squeeze(handles.Images.Image_normalized_dicom(handles.x-(avg-1)+i,handles.y-(avg-1)+j,:));
-            localMatch = handles.Reconstruction.sigMatch{sliceIdx}(handles.x-(avg-1)+i, handles.y-(avg-1)+j, :);
+            rawData = rawData + squeeze(handles.Images.Image_normalized_dicom(handles.x-(avg-1)+i,handles.y-(avg-1)+j, sliceIdx, :));
+            localMatch = handles.Reconstruction.sigMatch(handles.x-(avg-1)+i, handles.y-(avg-1)+j, sliceIdx, :);
             match = match + squeeze(localMatch);
             handles.patch(handles.x-(avg-1)+i,handles.y-(avg-1)+j)=1; % Set visibility for current voxel
             count = count+1;

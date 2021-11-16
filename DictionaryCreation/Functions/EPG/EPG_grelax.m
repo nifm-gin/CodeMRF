@@ -49,7 +49,6 @@ if (nargin > 1)			% Skip relaxation if only one argument
   RR = [1-E1];			% Mz Recovery, affects only Z0 state, as 
 				% recovered magnetization is not dephased.
 
-
   FpFmZ = EE * FpFmZ;		% Apply Relaxation
   FpFmZ(3,1) = FpFmZ(3,1)+RR;	% Recovery  ( here applied before diffusion,
 				% but could be after or split.)
