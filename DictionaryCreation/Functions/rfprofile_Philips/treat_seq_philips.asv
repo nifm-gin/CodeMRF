@@ -1,0 +1,3 @@
+load('seq.mat', 'mpf2')
+mydata = grp2idx(mpf2.edvalues);
+plot(mydata()

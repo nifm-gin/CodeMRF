@@ -131,11 +131,13 @@ elseif strcmp(seqIn.phase, 'quadratic')
 %     RFphasetrain = 0.5 * n .* (n-1);        % Used by Nicolas
     RFphasetrain = 0.5 * (n.^2 + n + 2);    % Handbook, (Zur et al 1991 ?)
     RFphasetrain = RFphasetrain * seqIn.phaseIncrement*pi/180; % conversion to radians
+%     RFphasetrain = RFphasetrain + pi*n;
 elseif strcmp(seqIn.phase, 'copy')
     assert(numel(seqIn.phaseIncrement) == seqIn.nPulses, 'When using "Copy" phase type, the num. of elts of the phase increment must be nPulses');
     RFphasetrain = seqIn.phaseIncrement*pi/180;
 end 
 
+RFphasetrain = mod(RFphasetrain, 2*pi);
 
 %% TR
 if genTR == 1

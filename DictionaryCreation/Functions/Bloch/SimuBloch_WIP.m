@@ -1,4 +1,4 @@
-function SignalEvol=SimuBloch(RFalphatrain ,RFphasetrain ,TRtrain ,TEtrain, T1, T2, df, gradDur, gradAmp, Shim, spoilType, invPulse, fov)
+function [SignalEvol, S] =SimuBloch(RFalphatrain ,RFphasetrain ,TRtrain ,TEtrain, T1, T2, df, gradDur, gradAmp, Shim, spoilType, invPulse, fov)
 % Simulate fast GRE sequence with options of gradients and custom RF shapes
 % alpha in rad, TR in sec, T1 and T2 in sec, df in Hz (can be [-200:200]),
 % Tcrush in s, Ampcrush in T/m, converted to G/cm for C function
@@ -6,12 +6,11 @@ function SignalEvol=SimuBloch(RFalphatrain ,RFphasetrain ,TRtrain ,TEtrain, T1, 
 %	--- Setup parameters ---
 N=numel(RFalphatrain);
 % Trf = 0.00001; % 10 us "hard" RF pulse.
-% Trf = 2.2251e-308;
-% Trf = 10 * 1e-16; %quasi instant pulse pour coller avec SimubSSFP de Tom (mrvox/Validations)
+% Trf = 10 * 1e-6;
 Trf = 1e-3; %as in MRVox
 gradAmp = gradAmp * 1e2; % Conversion from T/m to G/cm
 gamma = 4258; % Hz/G.
-numPos = 10000;
+numPos = 1000;
 x = linspace(-fov/2, fov/2, numPos); % positions in m
 x = x * 1e2; % positions in cm for C function
 % x =-2:.04:2; % isochromats so we can simulate effects of gradients x =-2:.02:2
@@ -41,28 +40,28 @@ end
 
 %	--- Signal Evolution ---
 SignalEvol=zeros(N,numel(df));
+% S = zeros(3,N);
 for n=1:N
+    % t in bloch is either the duration of the intervals, or their end-time
+    % (in the latter case, monotonically increasing)
+    
     %%%%%% first half of TR %%%%%%
-%     t = [Trf, sBefore*gradDur(n)+Trf, TEtrain(n)-(sBefore*gradDur(n)+Trf)]; % 3 time segments : RF pulse - spoil - precession % vA
-    t = [Trf, gradDur(n)+Trf, TEtrain(n)]; % 3 end points % vB
-%     t = [Trf, sBefore*gradDur(n)+Trf, TEtrain(n)-(sBefore*gradDur(n)+Trf)];
+    t = [Trf, gradDur(n)+Trf, TEtrain(n)]; % 3 time segments : RF pulse - spoil - precession
+    % here it is the end time
     g1 = [Shim, Shim + gradAmp(n)*sBefore, Shim]; %[Shim Shim] Shim + maybe Spoiler
     b1 = [(RFalphatrain(n)/Trf/gamma/2/pi)*exp(1i*RFphasetrain(n)), 0, 0]; % RF pulse on - off - off [G]
     
     [mx,my,mz] = bloch(b1,g1,t,T1,T2,df,x,0,mx,my,mz); % MEX function
     % Acq
     SignalEvol(n,:) = mean(mx)+1i*mean(my); % In-plane signal at TE
-    
+%     S(:,n) = [mx(1), my(1), mz(1)];
     %%%%%% Rest of TR %%%%%%
     %% Acq - Precess - Spoil - (Pulse) %%
 %     t2 = [(TRtrain(n)-TEtrain(n))-Tcrush(n) (TRtrain(n)-TEtrain(n))];
 %     g2 = [Shim, Shim + Ampcrush(n)*sAfter]; %[Shim Shim] % Shim+Cruhers.
 
     %% Acq - Spoil - Precess - (Pulse) %%
-%     t2 = [gradDur(n)*sAfter, TRtrain(n)-TEtrain(n)-gradDur(n)*sAfter]; % v1
-%     t2 = [gradDur(n)*sAfter, TRtrain(n)-TEtrain(n)]; % v2
-    t2 = [gradDur(n), TRtrain(n)-TEtrain(n)]; % v3
-
+    t2 = [gradDur(n), TRtrain(n)-TEtrain(n)]; % here it is the end time
     g2 = [Shim + gradAmp(n)*sAfter, Shim];
     
     b1 = [0 0];	% RF Gauss.

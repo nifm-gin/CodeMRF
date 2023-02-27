@@ -19,17 +19,19 @@ function [FpFmZ,RR] = EPG_rf(FpFmZ,alpha,phi)
 
 % -- From Weigel at al, JMR 205(2010)276-285, Eq. 8.
 
-if (abs(alpha)>2*pi) warning('epg_rf:  Flip angle should be in radians!'); end;
+if (abs(alpha)>2*pi) warning('epg_rf:  Flip angle should be in radians!'); end
 
 if (nargin < 3) warning('Rotation axis not specified - assuming -My'); 
 	phi=-pi/2; 
-end;
+end
 
+sinAlpha = sin(alpha);
+sinHalfAlpha = sin(alpha/2);
+cosHalfAlpha = cos(alpha/2);
 
-RR = [(cos(alpha/2))^2,                   exp(2*i*phi)*(sin(alpha/2))^2,   -i*exp(i*phi)*sin(alpha);
-      exp(-2*i*phi)*(sin(alpha/2))^2,     (cos(alpha/2))^2,                i*exp(-i*phi)*sin(alpha);
-      -i/2*exp(-i*phi)*sin(alpha),        i/2*exp(i*phi)*sin(alpha),       cos(alpha)];
-
+RR = [cosHalfAlpha^2,                   exp(2*1i*phi)*sinHalfAlpha^2,   -1i*exp(1i*phi)*sinAlpha;
+      exp(-2*1i*phi)*sinHalfAlpha^2,     cosHalfAlpha^2,                1i*exp(-1i*phi)*sinAlpha;
+      -1i/2*exp(-1i*phi)*sinAlpha,        1i/2*exp(1i*phi)*sinAlpha,       cos(alpha)];
 
 FpFmZ = RR * FpFmZ;
 
